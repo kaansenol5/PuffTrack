@@ -10,8 +10,16 @@ import Foundation
 
 struct DailyPuffCount: Codable, Identifiable {
     let id: UUID
-    let date: Date
+    var date: Date
     var count: Int
+}
+
+struct Milestone: Identifiable {
+    let id = UUID()
+    let days: Int
+    let title: String
+    let description: String
+    var isAchieved: Bool = false
 }
 
 struct UserSettings: Codable {
@@ -30,11 +38,12 @@ class PuffTrackData: ObservableObject {
     }
     
     func addPuff() {
-        let today = Calendar.current.startOfDay(for: Date())
-        if let index = puffCounts.firstIndex(where: { Calendar.current.isDate($0.date, inSameDayAs: today) }) {
+        let now = Date()
+        if let index = puffCounts.firstIndex(where: { Calendar.current.isDateInToday($0.date) }) {
             puffCounts[index].count += 1
+            puffCounts[index].date = now  // Update to the exact time of the latest puff
         } else {
-            puffCounts.append(DailyPuffCount(id: UUID(), date: today, count: 1))
+            puffCounts.append(DailyPuffCount(id: UUID(), date: now, count: 1))
         }
         saveData()
     }

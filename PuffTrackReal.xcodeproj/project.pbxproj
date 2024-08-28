@@ -17,7 +17,6 @@
 		9DF16EB42C35861900A1E56C /* PuffTrackRealTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9DF16EB32C35861900A1E56C /* PuffTrackRealTests.swift */; };
 		9DF16EBE2C35861900A1E56C /* PuffTrackRealUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9DF16EBD2C35861900A1E56C /* PuffTrackRealUITests.swift */; };
 		9DF16EC02C35861900A1E56C /* PuffTrackRealUITestsLaunchTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9DF16EBF2C35861900A1E56C /* PuffTrackRealUITestsLaunchTests.swift */; };
-		9DF16ECD2C35C18F00A1E56C /* Test.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9DF16ECC2C35C18F00A1E56C /* Test.swift */; };
 		9DF40D9D2C7E6CA700CCBF46 /* Views.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9DF40D9C2C7E6CA700CCBF46 /* Views.swift */; };
 /* End PBXBuildFile section */
 
@@ -52,7 +51,6 @@
 		9DF16EB92C35861900A1E56C /* PuffTrackRealUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = PuffTrackRealUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		9DF16EBD2C35861900A1E56C /* PuffTrackRealUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PuffTrackRealUITests.swift; sourceTree = "<group>"; };
 		9DF16EBF2C35861900A1E56C /* PuffTrackRealUITestsLaunchTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PuffTrackRealUITestsLaunchTests.swift; sourceTree = "<group>"; };
-		9DF16ECC2C35C18F00A1E56C /* Test.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Test.swift; sourceTree = "<group>"; };
 		9DF40D9C2C7E6CA700CCBF46 /* Views.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Views.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -106,7 +104,6 @@
 			children = (
 				9DF16EA22C35861800A1E56C /* PuffTrackRealApp.swift */,
 				9DF16EA42C35861800A1E56C /* ContentView.swift */,
-				9DF16ECC2C35C18F00A1E56C /* Test.swift */,
 				9DF16EA62C35861800A1E56C /* Assets.xcassets */,
 				9DF16EA82C35861800A1E56C /* Preview Content */,
 				9DF40D9C2C7E6CA700CCBF46 /* Views.swift */,
@@ -276,7 +273,6 @@
 				9DF16EA52C35861800A1E56C /* ContentView.swift in Sources */,
 				9D990AC12C7F4EDF00C58EDD /* DataModels.swift in Sources */,
 				9DF16EA32C35861800A1E56C /* PuffTrackRealApp.swift in Sources */,
-				9DF16ECD2C35C18F00A1E56C /* Test.swift in Sources */,
 				9D990AC32C7F4EED00C58EDD /* CalculationEngine.swift in Sources */,
 				9D990AC52C7F4F0700C58EDD /* ViewModel.swift in Sources */,
 			);

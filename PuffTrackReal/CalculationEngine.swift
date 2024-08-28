@@ -11,45 +11,38 @@ import Foundation
 class CalculationEngine {
     static func calculateStreak(puffCounts: [DailyPuffCount]) -> Int {
         let sortedCounts = puffCounts.sorted { $0.date > $1.date }
-        var streak = 0
-        let today = Calendar.current.startOfDay(for: Date())
+        guard let lastPuffDate = sortedCounts.first?.date else { return 0 }
         
-        for count in sortedCounts {
-            if count.count == 0 {
-                streak += 1
-            } else {
-                break
-            }
-            
-            if !Calendar.current.isDateInYesterday(count.date) && count.date != today {
-                break
-            }
-        }
+        let calendar = Calendar.current
+        let now = Date()
+        let daysSinceLastPuff = calendar.dateComponents([.day], from: lastPuffDate, to: now).day ?? 0
         
-        return streak
+        return daysSinceLastPuff
     }
     
-    static func calculateWithdrawalStatus(lastPuffTime: Date) -> (status: String, tip: String) {
+    static func calculateWithdrawalStatus(lastPuffTime: Date) -> (status: String, description: String) {
         let hoursSinceLastPuff = Int(-lastPuffTime.timeIntervalSinceNow / 3600)
+        
+        if hoursSinceLastPuff < 4 {
+            return ("You are still puffing", "Try to extend the time between puffs.")
+        }
+        
         switch hoursSinceLastPuff {
-        case 0...2:
-            return ("Craving Nicotine", "Try deep breathing exercises to manage cravings.")
-        case 3...5:
-            return ("Mild Withdrawal", "Stay hydrated and consider a short walk to distract yourself.")
-        case 6...12:
-            return ("Moderate Withdrawal", "You're doing great! Consider calling a friend for support.")
+        case 4...12:
+            return ("Early Withdrawal", "You might experience mild cravings. Stay hydrated and try deep breathing.")
         case 13...24:
-            return ("Peak Withdrawal", "The worst is almost over. Treat yourself to something nice.")
+            return ("Moderate Withdrawal", "Cravings may intensify. Stay busy and remember why you're quitting.")
+        case 25...72:
+            return ("Peak Withdrawal", "This is the toughest part. Your body is healing. Stay strong!")
         default:
-            return ("Recovery in Progress", "Your body is healing. Keep up the excellent work!")
+            return ("Recovery in Progress", "Great job! The worst is over. Keep going!")
         }
     }
-    
     static func calculateFinancials(puffCounts: [DailyPuffCount], settings: UserSettings) -> (moneySaved: Double, vapeDuration: Double) {
         let avgPuffsPerDay = calculateAveragePuffsPerDay(puffCounts: puffCounts)
         let dailySpend = settings.monthlySpending / 30
         let newDailySpend = (Double(avgPuffsPerDay) / Double(settings.puffsPerVape)) * settings.vapeCost
-        let moneySaved = max(0, dailySpend - newDailySpend)
+        let moneySaved = max(0, dailySpend - newDailySpend) * 30
         let vapeDuration = Double(settings.puffsPerVape) / max(1, avgPuffsPerDay)
         
         return (moneySaved, vapeDuration)

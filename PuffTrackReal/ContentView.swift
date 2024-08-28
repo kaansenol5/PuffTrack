@@ -31,13 +31,12 @@ struct ContentView: View {
             SettingsView(viewModel: viewModel)
         }
         .sheet(isPresented: $isMilestonesPresented) {
-            MilestonesView()
+            MilestonesView(viewModel: viewModel)
         }
         .sheet(isPresented: $isFriendsPresented) {
             FriendsView()
         }
-    }
-    
+    }    
     private var headerSection: some View {
         ZStack {
             HStack {
@@ -86,6 +85,9 @@ struct ContentView: View {
                     Text("Vape lasts \(String(format: "%.1f", viewModel.vapeDuration)) days")
                         .font(.caption)
                         .foregroundColor(.gray)
+                    Text(hoursSinceLastPuffText)
+                        .font(.caption)
+                        .foregroundColor(.gray)
                 }
                 .transition(.scale.combined(with: .opacity))
             }
@@ -96,7 +98,18 @@ struct ContentView: View {
             .position(x: 180, y: -30)
         }
     }
-    
+
+    private var hoursSinceLastPuffText: String {
+        let hours = viewModel.hoursSinceLastPuff
+        if hours < 1 {
+            return "Less than an hour since last puff"
+        } else if hours == 1 {
+            return "1 hour since last puff"
+        } else {
+            return "\(hours) hours since last puff"
+        }
+    }
+
     private var withdrawalTrackerSection: some View {
         VStack(alignment: .leading, spacing: 10) {
             Text("Withdrawal Tracker")
@@ -119,7 +132,7 @@ struct ContentView: View {
                     .foregroundColor(.secondary)
             }
             
-            Text(viewModel.withdrawalTip)
+            Text(viewModel.withdrawalDescription)
                 .font(.subheadline)
                 .foregroundColor(.secondary)
                 .padding(.top, 5)
@@ -134,14 +147,29 @@ struct ContentView: View {
         formatter.unitsStyle = .full
         return formatter.localizedString(for: viewModel.lastPuffTime, relativeTo: Date())
     }
+
     
     private var statsSection: some View {
-        HStack(spacing: 15) {
-            StatCard(value: "\(viewModel.streak) days", icon: "flame.fill", color: .orange, action: { isMilestonesPresented.toggle() })
-            StatCard(value: String(format: "%.0f", viewModel.moneySaved), icon: "dollarsign.circle.fill", color: .green, action: {})
+        VStack(spacing: 15) {
+            HStack {
+                Text("Streak")
+                    .font(.subheadline)
+                    .foregroundColor(.secondary)
+                Spacer()
+                Text("Monthly Potential Savings")
+                    .font(.subheadline)
+                    .foregroundColor(.secondary)
+            }
+            .padding(.horizontal)
+            
+            HStack(spacing: 15) {
+                StatCard(value: "\(viewModel.streak) days", icon: "flame.fill", color: .orange, action: { isMilestonesPresented.toggle() })
+                StatCard(value: "$\(String(format: "%.0f", viewModel.moneySaved))", icon: "dollarsign.circle.fill", color: .green, action: {})
+            }
         }
     }
-    
+
+
     private var socialSection: some View {
         Button(action: { isFriendsPresented.toggle() }) {
             VStack(alignment: .leading, spacing: 10) {
@@ -227,21 +255,23 @@ struct StatCard: View {
     
     var body: some View {
         Button(action: action) {
-            HStack(spacing: 10) {
+            HStack {
                 Image(systemName: icon)
                     .foregroundColor(color)
-                    .font(.system(size: 20))
+                    .font(.system(size: 24))
+                Spacer()
                 Text(value)
-                    .font(.system(size: 18, weight: .semibold, design: .rounded))
+                    .font(.system(size: 24, weight: .bold, design: .rounded))
                     .foregroundColor(.primary)
             }
-            .padding(.horizontal, 15)
-            .padding(.vertical, 10)
+            .padding()
+            .frame(maxWidth: .infinity)
             .background(Color.secondary.opacity(0.1))
-            .cornerRadius(10)
+            .cornerRadius(15)
         }
     }
 }
+
 #Preview{
     ContentView()
 }

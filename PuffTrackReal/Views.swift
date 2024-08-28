@@ -8,51 +8,40 @@
 import Foundation
 import SwiftUI
 
+import SwiftUI
+
 struct MilestonesView: View {
+    @ObservedObject var viewModel: PuffTrackViewModel
     @Environment(\.presentationMode) var presentationMode
-    @Environment(\.colorScheme) var colorScheme
     
     var body: some View {
         NavigationView {
-            List {
-                Section(header: Text("Achieved")) {
-                    milestoneRow(title: "First Day Clean", description: "24 hours without a puff", date: "May 1, 2023")
-                    milestoneRow(title: "Week Warrior", description: "7 days puff-free", date: "May 7, 2023")
-                }
-                
-                Section(header: Text("Upcoming")) {
-                    milestoneRow(title: "Month Master", description: "30 days without a puff", progress: 0.6)
-                    milestoneRow(title: "Quarter Champion", description: "90 days smoke-free", progress: 0.2)
+            List(viewModel.milestones) { milestone in
+                VStack(alignment: .leading, spacing: 5) {
+                    HStack {
+                        Text(milestone.title)
+                            .font(.headline)
+                        Spacer()
+                        if milestone.isAchieved {
+                            Image(systemName: "checkmark.circle.fill")
+                                .foregroundColor(.green)
+                        }
+                    }
+                    Text(milestone.description)
+                        .font(.subheadline)
+                        .foregroundColor(.secondary)
+                    Text("\(milestone.days) days")
+                        .font(.caption)
+                        .foregroundColor(.secondary)
                 }
             }
-            .listStyle(InsetGroupedListStyle())
             .navigationTitle("Milestones")
             .navigationBarItems(trailing: Button("Done") {
                 presentationMode.wrappedValue.dismiss()
             })
         }
-        .accentColor(.red)
-    }
-    
-    private func milestoneRow(title: String, description: String, date: String? = nil, progress: CGFloat? = nil) -> some View {
-        VStack(alignment: .leading, spacing: 5) {
-            Text(title)
-                .font(.headline)
-            Text(description)
-                .font(.subheadline)
-                .foregroundColor(.gray)
-            if let date = date {
-                Text("Achieved: \(date)")
-                    .font(.caption)
-                    .foregroundColor(.green)
-            } else if let progress = progress {
-                ProgressView(value: progress)
-                    .accentColor(.red)
-            }
-        }
     }
 }
-
 struct FinancesView: View {
     @Environment(\.presentationMode) var presentationMode
     @Environment(\.colorScheme) var colorScheme
