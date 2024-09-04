@@ -8,6 +8,7 @@
 import Foundation
 import Foundation
 import Combine
+import UserNotifications
 
 class PuffTrackViewModel: ObservableObject {
     @Published private var model: PuffTrackData
@@ -17,7 +18,16 @@ class PuffTrackViewModel: ObservableObject {
     @Published var moneySaved: Double = 0
     @Published var vapeDuration: Double = 0
     @Published var milestones: [Milestone] = []
-    
+    @Published var notificationsEnabled: Bool = false {
+        didSet {
+            if notificationsEnabled {
+                requestNotificationPermission()
+            } else {
+                cancelAllNotifications()
+            }
+        }
+    }
+
     private var cancellables = Set<AnyCancellable>()
     
     init(model: PuffTrackData = PuffTrackData()) {
@@ -26,6 +36,93 @@ class PuffTrackViewModel: ObservableObject {
         setupBindings()
         updateCalculations()
     }
+    
+    func requestNotificationPermission() {
+        UNUserNotificationCenter.current().requestAuthorization(options: [.alert, .sound, .badge]) { granted, _ in
+            DispatchQueue.main.async {
+                self.notificationsEnabled = granted
+                if granted {
+                    self.scheduleNotifications()
+                }
+            }
+        }
+    }
+    func scheduleNotifications() {
+        cancelAllNotifications()
+        
+        // Schedule daily motivation notification
+        scheduleDailyInsightNotification()
+        
+        // Schedule milestone notifications
+        for milestone in milestones where !milestone.isAchieved {
+            scheduleMilestoneNotification(for: milestone)
+        }
+    }
+    private let dailyInsights = [
+        "Drink less coffee to reduce cravings",
+        "Stay hydrated throughout the day",
+        "Practice deep breathing exercises",
+        "Go for a short walk when you feel the urge to vape",
+        "Try chewing sugar-free gum as a distraction",
+        "Meditate for 5 minutes to reduce stress",
+        "Call a friend for support when you're struggling",
+        "Eat more fruits and vegetables for better overall health",
+        "Get at least 7 hours of sleep each night",
+        "Exercise regularly to boost your mood",
+        "Try a new hobby to keep your hands busy",
+        "Avoid alcohol as it can trigger cravings",
+        "Practice positive self-talk and affirmations",
+        "Reward yourself for each day without vaping",
+        "Keep a journal to track your progress and feelings",
+        "Spend time in nature to reduce stress",
+        "Try aromatherapy with calming scents like lavender",
+        "Practice good posture to improve breathing",
+        "Listen to calming music when you feel stressed",
+        "Eat smaller, more frequent meals to stabilize blood sugar",
+        "Try yoga or stretching to relax your body",
+        "Use a stress ball or fidget toy when you have cravings",
+        "Practice mindfulness in your daily activities",
+        "Limit screen time before bed for better sleep",
+        "Try progressive muscle relaxation techniques",
+        "Engage in creative activities like drawing or writing",
+        "Spend quality time with pets for emotional support",
+        "Take a warm bath to relax in the evening",
+        "Practice gratitude by listing things you're thankful for",
+        "Try herbal tea instead of caffeinated drinks"
+    ]
+
+    
+    private func scheduleDailyInsightNotification() {
+        let content = UNMutableNotificationContent()
+        content.title = "Daily Insight"
+        content.body = dailyInsights.randomElement() ?? "Stay strong on your journey!"
+        
+        var dateComponents = DateComponents()
+        dateComponents.hour = 9 // Set to 9 AM, adjust as needed
+        dateComponents.minute = 0
+        
+        let trigger = UNCalendarNotificationTrigger(dateMatching: dateComponents, repeats: true)
+        
+        let request = UNNotificationRequest(identifier: "dailyInsight", content: content, trigger: trigger)
+        UNUserNotificationCenter.current().add(request)
+    }
+
+    private func scheduleMilestoneNotification(for milestone: Milestone) {
+        let content = UNMutableNotificationContent()
+        content.title = "Milestone Alert!"
+        content.body = "You're approaching the '\(milestone.title)' milestone. Keep going!"
+        
+        let daysUntilMilestone = milestone.days - streak
+        let trigger = UNTimeIntervalNotificationTrigger(timeInterval: TimeInterval(daysUntilMilestone * 24 * 60 * 60), repeats: false)
+        
+        let request = UNNotificationRequest(identifier: "milestone-\(milestone.id)", content: content, trigger: trigger)
+        UNUserNotificationCenter.current().add(request)
+    }
+    
+    private func cancelAllNotifications() {
+        UNUserNotificationCenter.current().removeAllPendingNotificationRequests()
+    }
+    
     
     private func setupMilestones() {
         milestones = [
@@ -92,7 +189,9 @@ class PuffTrackViewModel: ObservableObject {
         let financials = CalculationEngine.calculateFinancials(puffCounts: model.puffCounts, settings: model.settings)
         moneySaved = financials.moneySaved
         vapeDuration = financials.vapeDuration
-        
+        if notificationsEnabled {
+            scheduleNotifications()
+        }
         updateMilestones()
     }
     

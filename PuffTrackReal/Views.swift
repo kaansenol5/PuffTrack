@@ -218,6 +218,10 @@ struct SettingsView: View {
                         .keyboardType(.decimalPad)
                 }
                 
+                Section(header: Text("Notifications")) {
+                    Toggle("Enable Notifications", isOn: $viewModel.notificationsEnabled)
+                }
+                
                 Section {
                     Button("Reset All Data") {
                         // Implement reset functionality
@@ -233,6 +237,7 @@ struct SettingsView: View {
         .onAppear(perform: loadCurrentSettings)
     }
     
+
     private func loadCurrentSettings() {
         vapeCost = String(format: "%.2f", viewModel.settings.vapeCost)
         puffsPerVape = "\(viewModel.settings.puffsPerVape)"
