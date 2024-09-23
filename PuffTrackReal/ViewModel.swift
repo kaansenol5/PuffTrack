@@ -6,7 +6,6 @@
 //
 
 import Foundation
-import Foundation
 import Combine
 import UserNotifications
 
@@ -47,6 +46,7 @@ class PuffTrackViewModel: ObservableObject {
             }
         }
     }
+
     func scheduleNotifications() {
         cancelAllNotifications()
         
@@ -58,6 +58,7 @@ class PuffTrackViewModel: ObservableObject {
             scheduleMilestoneNotification(for: milestone)
         }
     }
+
     private let dailyInsights = [
         "Drink less coffee to reduce cravings",
         "Stay hydrated throughout the day",
@@ -90,8 +91,6 @@ class PuffTrackViewModel: ObservableObject {
         "Practice gratitude by listing things you're thankful for",
         "Try herbal tea instead of caffeinated drinks"
     ]
-
-    
     private func scheduleDailyInsightNotification() {
         let content = UNMutableNotificationContent()
         content.title = "Daily Insight"
@@ -123,7 +122,6 @@ class PuffTrackViewModel: ObservableObject {
         UNUserNotificationCenter.current().removeAllPendingNotificationRequests()
     }
     
-    
     private func setupMilestones() {
         milestones = [
             Milestone(days: 1, title: "24 Hours Free", description: "You've made it through the first day!"),
@@ -135,21 +133,19 @@ class PuffTrackViewModel: ObservableObject {
         ]
     }
     
-    
     var puffCount: Int {
         let today = Calendar.current.startOfDay(for: Date())
-        return model.puffCounts.first(where: { Calendar.current.isDate($0.date, inSameDayAs: today) })?.count ?? 0
+        return CalculationEngine.getPuffCountForDate(today, puffs: model.puffs)
     }
     
     var lastPuffTime: Date {
-        model.puffCounts.sorted { $0.date > $1.date }.first?.date ?? Date()
+        model.puffs.map { $0.timestamp }.max() ?? Date()
     }
+
     var hoursSinceLastPuff: Int {
         let timeInterval = -lastPuffTime.timeIntervalSinceNow
         return Int(timeInterval / 3600)
     }
-    
-
     
     var settings: UserSettings {
         model.settings
@@ -166,7 +162,7 @@ class PuffTrackViewModel: ObservableObject {
     }
     
     private func setupBindings() {
-        model.$puffCounts
+        model.$puffs
             .sink { [weak self] _ in
                 self?.updateCalculations()
             }
@@ -180,15 +176,16 @@ class PuffTrackViewModel: ObservableObject {
     }
     
     private func updateCalculations() {
-        streak = CalculationEngine.calculateStreak(puffCounts: model.puffCounts)
+        streak = CalculationEngine.calculateStreak(puffs: model.puffs)
         
-        let withdrawalInfo = CalculationEngine.calculateWithdrawalStatus(lastPuffTime: lastPuffTime)
+        let withdrawalInfo = CalculationEngine.calculateWithdrawalStatus(puffs: model.puffs)
         withdrawalStatus = withdrawalInfo.status
         withdrawalDescription = withdrawalInfo.description
         
-        let financials = CalculationEngine.calculateFinancials(puffCounts: model.puffCounts, settings: model.settings)
+        let financials = CalculationEngine.calculateFinancials(puffs: model.puffs, settings: model.settings)
         moneySaved = financials.moneySaved
         vapeDuration = financials.vapeDuration
+        
         if notificationsEnabled {
             scheduleNotifications()
         }
@@ -201,4 +198,3 @@ class PuffTrackViewModel: ObservableObject {
         }
     }
 }
-

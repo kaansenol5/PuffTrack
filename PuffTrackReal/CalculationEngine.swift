@@ -6,12 +6,10 @@
 //
 
 import Foundation
-import Foundation
 
 class CalculationEngine {
-    static func calculateStreak(puffCounts: [DailyPuffCount]) -> Int {
-        let sortedCounts = puffCounts.sorted { $0.date > $1.date }
-        guard let lastPuffDate = sortedCounts.first?.date else { return 0 }
+    static func calculateStreak(puffs: [Puff]) -> Int {
+        guard let lastPuffDate = puffs.map({ $0.timestamp }).max() else { return 0 }
         
         let calendar = Calendar.current
         let now = Date()
@@ -20,7 +18,11 @@ class CalculationEngine {
         return daysSinceLastPuff
     }
     
-    static func calculateWithdrawalStatus(lastPuffTime: Date) -> (status: String, description: String) {
+    static func calculateWithdrawalStatus(puffs: [Puff]) -> (status: String, description: String) {
+        guard let lastPuffTime = puffs.map({ $0.timestamp }).max() else {
+            return ("No data", "Start tracking your puffs to see your withdrawal status.")
+        }
+        
         let hoursSinceLastPuff = Int(-lastPuffTime.timeIntervalSinceNow / 3600)
         
         if hoursSinceLastPuff < 4 {
@@ -38,8 +40,9 @@ class CalculationEngine {
             return ("Recovery in Progress", "Great job! The worst is over. Keep going!")
         }
     }
-    static func calculateFinancials(puffCounts: [DailyPuffCount], settings: UserSettings) -> (moneySaved: Double, vapeDuration: Double) {
-        let avgPuffsPerDay = calculateAveragePuffsPerDay(puffCounts: puffCounts)
+
+    static func calculateFinancials(puffs: [Puff], settings: UserSettings) -> (moneySaved: Double, vapeDuration: Double) {
+        let avgPuffsPerDay = calculateAveragePuffsPerDay(puffs: puffs)
         let dailySpend = settings.monthlySpending / 30
         let newDailySpend = (Double(avgPuffsPerDay) / Double(settings.puffsPerVape)) * settings.vapeCost
         let moneySaved = max(0, dailySpend - newDailySpend) * 30
@@ -48,9 +51,19 @@ class CalculationEngine {
         return (moneySaved, vapeDuration)
     }
     
-    private static func calculateAveragePuffsPerDay(puffCounts: [DailyPuffCount]) -> Double {
-        let recentCounts = puffCounts.suffix(30)
-        let totalPuffs = recentCounts.reduce(0) { $0 + $1.count }
-        return Double(totalPuffs) / Double(max(1, recentCounts.count))
+    private static func calculateAveragePuffsPerDay(puffs: [Puff]) -> Double {
+        let calendar = Calendar.current
+        let now = Date()
+        let thirtyDaysAgo = calendar.date(byAdding: .day, value: -30, to: now)!
+        
+        let recentPuffs = puffs.filter { $0.timestamp >= thirtyDaysAgo }
+        let uniqueDays = Set(recentPuffs.map { calendar.startOfDay(for: $0.timestamp) }).count
+        
+        return Double(recentPuffs.count) / Double(max(1, uniqueDays))
+    }
+    
+    static func getPuffCountForDate(_ date: Date, puffs: [Puff]) -> Int {
+        let calendar = Calendar.current
+        return puffs.filter { calendar.isDate($0.timestamp, inSameDayAs: date) }.count
     }
 }

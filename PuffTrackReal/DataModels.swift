@@ -6,12 +6,17 @@
 //
 
 import Foundation
-import Foundation
 
-struct DailyPuffCount: Codable, Identifiable {
+struct Puff: Codable, Identifiable {
     let id: UUID
-    var date: Date
-    var count: Int
+    let timestamp: Date
+    var isSynced: Bool
+}
+
+struct UserSettings: Codable {
+    var vapeCost: Double
+    var puffsPerVape: Int
+    var monthlySpending: Double
 }
 
 struct Milestone: Identifiable {
@@ -22,14 +27,8 @@ struct Milestone: Identifiable {
     var isAchieved: Bool = false
 }
 
-struct UserSettings: Codable {
-    var vapeCost: Double
-    var puffsPerVape: Int
-    var monthlySpending: Double
-}
-
 class PuffTrackData: ObservableObject {
-    @Published var puffCounts: [DailyPuffCount] = []
+    @Published var puffs: [Puff] = []
     @Published var settings: UserSettings
     
     init() {
@@ -38,20 +37,15 @@ class PuffTrackData: ObservableObject {
     }
     
     func addPuff() {
-        let now = Date()
-        if let index = puffCounts.firstIndex(where: { Calendar.current.isDateInToday($0.date) }) {
-            puffCounts[index].count += 1
-            puffCounts[index].date = now  // Update to the exact time of the latest puff
-        } else {
-            puffCounts.append(DailyPuffCount(id: UUID(), date: now, count: 1))
-        }
+        let newPuff = Puff(id: UUID(), timestamp: Date(), isSynced: false)
+        puffs.append(newPuff)
         saveData()
     }
     
     private func loadData() {
-        if let data = UserDefaults.standard.data(forKey: "puffCounts") {
-            if let decoded = try? JSONDecoder().decode([DailyPuffCount].self, from: data) {
-                self.puffCounts = decoded
+        if let data = UserDefaults.standard.data(forKey: "puffs") {
+            if let decoded = try? JSONDecoder().decode([Puff].self, from: data) {
+                self.puffs = decoded
             }
         }
         
@@ -63,12 +57,25 @@ class PuffTrackData: ObservableObject {
     }
     
     private func saveData() {
-        if let encoded = try? JSONEncoder().encode(puffCounts) {
-            UserDefaults.standard.set(encoded, forKey: "puffCounts")
+        if let encoded = try? JSONEncoder().encode(puffs) {
+            UserDefaults.standard.set(encoded, forKey: "puffs")
         }
         
         if let encoded = try? JSONEncoder().encode(settings) {
             UserDefaults.standard.set(encoded, forKey: "userSettings")
         }
+    }
+    
+    func getPuffCountForDate(_ date: Date) -> Int {
+        let calendar = Calendar.current
+        return puffs.filter { calendar.isDate($0.timestamp, inSameDayAs: date) }.count
+    }
+    
+    func syncPuffs() {
+        // Implement your syncing logic here
+        // After syncing, update the isSynced status for synced puffs
+        // For example:
+        // puffs = puffs.map { Puff(id: $0.id, timestamp: $0.timestamp, isSynced: true) }
+        // saveData()
     }
 }
