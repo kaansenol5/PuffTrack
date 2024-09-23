@@ -9,16 +9,19 @@ import SwiftUI
 
 struct ContentView: View {
     @StateObject private var viewModel = PuffTrackViewModel()
+    @StateObject private var socialsViewModel = SocialsViewModel()
     @State private var isSettingsPresented = false
     @State private var isMilestonesPresented = false
     @State private var isFriendsPresented = false
+    @State private var isAuthPresented = false  // New state for AuthView presentation
+
     @Environment(\.colorScheme) var colorScheme
     
     var body: some View {
         ZStack {
             backgroundColor.edgesIgnoringSafeArea(.all)
             
-            VStack(spacing: 25) {
+            VStack(spacing: 15) {
                 headerSection
                 puffTracker
                 withdrawalTrackerSection
@@ -33,9 +36,17 @@ struct ContentView: View {
         .sheet(isPresented: $isMilestonesPresented) {
             MilestonesView(viewModel: viewModel)
         }
-        .sheet(isPresented: $isFriendsPresented) {
-            FriendsView()
+        .sheet(isPresented: $isAuthPresented) {
+            AuthView(socialsViewModel: socialsViewModel, isPresented: $isAuthPresented)
         }
+        .sheet(isPresented: $isFriendsPresented) {
+            if socialsViewModel.isUserLoggedIn() {
+                FriendsView(socialsViewModel: socialsViewModel)
+            } else {
+                AuthView(socialsViewModel: socialsViewModel, isPresented: $isAuthPresented)
+            }
+        }
+
     }    
     private var headerSection: some View {
         ZStack {
@@ -171,28 +182,42 @@ struct ContentView: View {
 
 
     private var socialSection: some View {
-        Button(action: { isFriendsPresented.toggle() }) {
-            VStack(alignment: .leading, spacing: 10) {
-                Text("FRIENDS")
-                    .font(.caption)
-                    .foregroundColor(.gray)
+        Button(action: {
+            if(socialsViewModel.isUserLoggedIn()){
+                isFriendsPresented.toggle()
+            }
+            else{
+                isAuthPresented.toggle()
+            } }) {
+            VStack(alignment: .leading, spacing: 1) {
+                Text("Friends")
+                    .font(.headline)
+                    .foregroundColor(textColor)
                 
                 ForEach(1...3, id: \.self) { _ in
                     HStack {
                         Circle()
                             .fill(Color.red)
-                            .frame(width: 40, height: 40)
-                        VStack(alignment: .leading) {
+                            .frame(width: 40, height: 50)
+                            .overlay(
+                                Text("FN") // Placeholder initials
+                                    .foregroundColor(.white)
+                                    .font(.headline)
+                            )
+                        VStack(alignment: .leading, spacing: 5) {
                             Text("Friend Name")
                                 .foregroundColor(textColor)
+                                .font(.headline)
                             Text("15 puffs today")
-                                .font(.caption)
+                                .font(.subheadline)
                                 .foregroundColor(.gray)
                         }
                         Spacer()
                         Text("-5%")
                             .foregroundColor(.green)
+                            .font(.subheadline)
                     }
+                    .padding(.vertical, 5)
                 }
             }
             .padding()
@@ -200,7 +225,7 @@ struct ContentView: View {
             .cornerRadius(10)
         }
     }
-    
+
     private var backgroundColor: Color {
         colorScheme == .dark ? Color.black.opacity(0.9) : Color.white
     }

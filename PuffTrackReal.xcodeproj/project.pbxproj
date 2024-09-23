@@ -7,14 +7,18 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		1FAFF658064294BE44D4AED9 /* Pods_PuffTrackReal.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A3CDB7A64601B9AADB206D2E /* Pods_PuffTrackReal.framework */; };
+		9D2C14FA2C95C3EA003DCD12 /* SocialsViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9D2C14F92C95C3EA003DCD12 /* SocialsViewModel.swift */; };
+		9D6E90A22C95E13000DBC81C /* PuffTrackRealTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9D6E90A12C95E13000DBC81C /* PuffTrackRealTests.swift */; };
+		9D6E90A62C95E73700DBC81C /* FriendsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9D6E90A52C95E73700DBC81C /* FriendsView.swift */; };
 		9D990AC12C7F4EDF00C58EDD /* DataModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9D990AC02C7F4EDF00C58EDD /* DataModels.swift */; };
 		9D990AC32C7F4EED00C58EDD /* CalculationEngine.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9D990AC22C7F4EED00C58EDD /* CalculationEngine.swift */; };
 		9D990AC52C7F4F0700C58EDD /* ViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9D990AC42C7F4F0700C58EDD /* ViewModel.swift */; };
+		9DC18E962C95DEE80081F76A /* AuthView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9DC18E952C95DEE80081F76A /* AuthView.swift */; };
 		9DF16EA32C35861800A1E56C /* PuffTrackRealApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9DF16EA22C35861800A1E56C /* PuffTrackRealApp.swift */; };
 		9DF16EA52C35861800A1E56C /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9DF16EA42C35861800A1E56C /* ContentView.swift */; };
 		9DF16EA72C35861800A1E56C /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 9DF16EA62C35861800A1E56C /* Assets.xcassets */; };
 		9DF16EAA2C35861800A1E56C /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 9DF16EA92C35861800A1E56C /* Preview Assets.xcassets */; };
-		9DF16EB42C35861900A1E56C /* PuffTrackRealTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9DF16EB32C35861900A1E56C /* PuffTrackRealTests.swift */; };
 		9DF16EBE2C35861900A1E56C /* PuffTrackRealUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9DF16EBD2C35861900A1E56C /* PuffTrackRealUITests.swift */; };
 		9DF16EC02C35861900A1E56C /* PuffTrackRealUITestsLaunchTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9DF16EBF2C35861900A1E56C /* PuffTrackRealUITestsLaunchTests.swift */; };
 		9DF40D9D2C7E6CA700CCBF46 /* Views.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9DF40D9C2C7E6CA700CCBF46 /* Views.swift */; };
@@ -38,21 +42,28 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		9D2C14F92C95C3EA003DCD12 /* SocialsViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SocialsViewModel.swift; sourceTree = "<group>"; };
 		9D2D91712C7F726C00D45238 /* TODOS.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = TODOS.md; sourceTree = "<group>"; };
+		9D6E90A02C95E13000DBC81C /* PuffTrackRealTests-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "PuffTrackRealTests-Bridging-Header.h"; sourceTree = "<group>"; };
+		9D6E90A12C95E13000DBC81C /* PuffTrackRealTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PuffTrackRealTests.swift; sourceTree = "<group>"; };
+		9D6E90A52C95E73700DBC81C /* FriendsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FriendsView.swift; sourceTree = "<group>"; };
 		9D990AC02C7F4EDF00C58EDD /* DataModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DataModels.swift; sourceTree = "<group>"; };
 		9D990AC22C7F4EED00C58EDD /* CalculationEngine.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CalculationEngine.swift; sourceTree = "<group>"; };
 		9D990AC42C7F4F0700C58EDD /* ViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewModel.swift; sourceTree = "<group>"; };
+		9DC18E952C95DEE80081F76A /* AuthView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthView.swift; sourceTree = "<group>"; };
 		9DF16E9F2C35861800A1E56C /* PuffTrackReal.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = PuffTrackReal.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		9DF16EA22C35861800A1E56C /* PuffTrackRealApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PuffTrackRealApp.swift; sourceTree = "<group>"; };
 		9DF16EA42C35861800A1E56C /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
 		9DF16EA62C35861800A1E56C /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		9DF16EA92C35861800A1E56C /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
 		9DF16EAF2C35861900A1E56C /* PuffTrackRealTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = PuffTrackRealTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
-		9DF16EB32C35861900A1E56C /* PuffTrackRealTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PuffTrackRealTests.swift; sourceTree = "<group>"; };
 		9DF16EB92C35861900A1E56C /* PuffTrackRealUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = PuffTrackRealUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		9DF16EBD2C35861900A1E56C /* PuffTrackRealUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PuffTrackRealUITests.swift; sourceTree = "<group>"; };
 		9DF16EBF2C35861900A1E56C /* PuffTrackRealUITestsLaunchTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PuffTrackRealUITestsLaunchTests.swift; sourceTree = "<group>"; };
 		9DF40D9C2C7E6CA700CCBF46 /* Views.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Views.swift; sourceTree = "<group>"; };
+		A3CDB7A64601B9AADB206D2E /* Pods_PuffTrackReal.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_PuffTrackReal.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		A5B3213E8C61C7DAEE79609B /* Pods-PuffTrackReal.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-PuffTrackReal.release.xcconfig"; path = "Target Support Files/Pods-PuffTrackReal/Pods-PuffTrackReal.release.xcconfig"; sourceTree = "<group>"; };
+		A6F1327F21A5F48A54DCCE8D /* Pods-PuffTrackReal.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-PuffTrackReal.debug.xcconfig"; path = "Target Support Files/Pods-PuffTrackReal/Pods-PuffTrackReal.debug.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -60,6 +71,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				1FAFF658064294BE44D4AED9 /* Pods_PuffTrackReal.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -80,6 +92,15 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		119B0437B7EF6F9D418C2B40 /* Pods */ = {
+			isa = PBXGroup;
+			children = (
+				A6F1327F21A5F48A54DCCE8D /* Pods-PuffTrackReal.debug.xcconfig */,
+				A5B3213E8C61C7DAEE79609B /* Pods-PuffTrackReal.release.xcconfig */,
+			);
+			path = Pods;
+			sourceTree = "<group>";
+		};
 		9DF16E962C35861800A1E56C = {
 			isa = PBXGroup;
 			children = (
@@ -87,6 +108,8 @@
 				9DF16EB22C35861900A1E56C /* PuffTrackRealTests */,
 				9DF16EBC2C35861900A1E56C /* PuffTrackRealUITests */,
 				9DF16EA02C35861800A1E56C /* Products */,
+				119B0437B7EF6F9D418C2B40 /* Pods */,
+				A775FF220D340BD806FE362C /* Frameworks */,
 			);
 			sourceTree = "<group>";
 		};
@@ -111,7 +134,10 @@
 				9D990AC02C7F4EDF00C58EDD /* DataModels.swift */,
 				9D990AC22C7F4EED00C58EDD /* CalculationEngine.swift */,
 				9D990AC42C7F4F0700C58EDD /* ViewModel.swift */,
+				9D2C14F92C95C3EA003DCD12 /* SocialsViewModel.swift */,
 				9D2D91712C7F726C00D45238 /* TODOS.md */,
+				9DC18E952C95DEE80081F76A /* AuthView.swift */,
+				9D6E90A52C95E73700DBC81C /* FriendsView.swift */,
 			);
 			path = PuffTrackReal;
 			sourceTree = "<group>";
@@ -127,7 +153,8 @@
 		9DF16EB22C35861900A1E56C /* PuffTrackRealTests */ = {
 			isa = PBXGroup;
 			children = (
-				9DF16EB32C35861900A1E56C /* PuffTrackRealTests.swift */,
+				9D6E90A12C95E13000DBC81C /* PuffTrackRealTests.swift */,
+				9D6E90A02C95E13000DBC81C /* PuffTrackRealTests-Bridging-Header.h */,
 			);
 			path = PuffTrackRealTests;
 			sourceTree = "<group>";
@@ -141,6 +168,14 @@
 			path = PuffTrackRealUITests;
 			sourceTree = "<group>";
 		};
+		A775FF220D340BD806FE362C /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				A3CDB7A64601B9AADB206D2E /* Pods_PuffTrackReal.framework */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
@@ -148,9 +183,11 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 9DF16EC32C35861900A1E56C /* Build configuration list for PBXNativeTarget "PuffTrackReal" */;
 			buildPhases = (
+				09062A7460CD482AD3F202FF /* [CP] Check Pods Manifest.lock */,
 				9DF16E9B2C35861800A1E56C /* Sources */,
 				9DF16E9C2C35861800A1E56C /* Frameworks */,
 				9DF16E9D2C35861800A1E56C /* Resources */,
+				CA82EEE13D7B94B8649E9B73 /* [CP] Embed Pods Frameworks */,
 			);
 			buildRules = (
 			);
@@ -212,6 +249,7 @@
 					};
 					9DF16EAE2C35861900A1E56C = {
 						CreatedOnToolsVersion = 15.3;
+						LastSwiftMigration = 1540;
 						TestTargetID = 9DF16E9E2C35861800A1E56C;
 					};
 					9DF16EB82C35861900A1E56C = {
@@ -266,16 +304,61 @@
 		};
 /* End PBXResourcesBuildPhase section */
 
+/* Begin PBXShellScriptBuildPhase section */
+		09062A7460CD482AD3F202FF /* [CP] Check Pods Manifest.lock */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+				"${PODS_PODFILE_DIR_PATH}/Podfile.lock",
+				"${PODS_ROOT}/Manifest.lock",
+			);
+			name = "[CP] Check Pods Manifest.lock";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+				"$(DERIVED_FILE_DIR)/Pods-PuffTrackReal-checkManifestLockResult.txt",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
+			showEnvVarsInLog = 0;
+		};
+		CA82EEE13D7B94B8649E9B73 /* [CP] Embed Pods Frameworks */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-PuffTrackReal/Pods-PuffTrackReal-frameworks-${CONFIGURATION}-input-files.xcfilelist",
+			);
+			name = "[CP] Embed Pods Frameworks";
+			outputFileListPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-PuffTrackReal/Pods-PuffTrackReal-frameworks-${CONFIGURATION}-output-files.xcfilelist",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-PuffTrackReal/Pods-PuffTrackReal-frameworks.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
+/* End PBXShellScriptBuildPhase section */
+
 /* Begin PBXSourcesBuildPhase section */
 		9DF16E9B2C35861800A1E56C /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
 				9DF40D9D2C7E6CA700CCBF46 /* Views.swift in Sources */,
+				9D2C14FA2C95C3EA003DCD12 /* SocialsViewModel.swift in Sources */,
 				9DF16EA52C35861800A1E56C /* ContentView.swift in Sources */,
+				9D6E90A62C95E73700DBC81C /* FriendsView.swift in Sources */,
 				9D990AC12C7F4EDF00C58EDD /* DataModels.swift in Sources */,
 				9DF16EA32C35861800A1E56C /* PuffTrackRealApp.swift in Sources */,
 				9D990AC32C7F4EED00C58EDD /* CalculationEngine.swift in Sources */,
+				9DC18E962C95DEE80081F76A /* AuthView.swift in Sources */,
 				9D990AC52C7F4F0700C58EDD /* ViewModel.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -284,7 +367,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				9DF16EB42C35861900A1E56C /* PuffTrackRealTests.swift in Sources */,
+				9D6E90A22C95E13000DBC81C /* PuffTrackRealTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -349,8 +432,8 @@
 				COPY_PHASE_STRIP = NO;
 				DEBUG_INFORMATION_FORMAT = dwarf;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
-				ENABLE_TESTABILITY = YES;
-				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				ENABLE_TESTABILITY = NO;
+				ENABLE_USER_SCRIPT_SANDBOXING = NO;
 				GCC_C_LANGUAGE_STANDARD = gnu17;
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_NO_COMMON_BLOCKS = YES;
@@ -413,7 +496,8 @@
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				ENABLE_NS_ASSERTIONS = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
-				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				ENABLE_TESTABILITY = NO;
+				ENABLE_USER_SCRIPT_SANDBOXING = NO;
 				GCC_C_LANGUAGE_STANDARD = gnu17;
 				GCC_NO_COMMON_BLOCKS = YES;
 				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
@@ -434,6 +518,7 @@
 		};
 		9DF16EC42C35861900A1E56C /* Debug */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = A6F1327F21A5F48A54DCCE8D /* Pods-PuffTrackReal.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
@@ -463,6 +548,7 @@
 		};
 		9DF16EC52C35861900A1E56C /* Release */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = A5B3213E8C61C7DAEE79609B /* Pods-PuffTrackReal.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
@@ -495,6 +581,7 @@
 			buildSettings = {
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				BUNDLE_LOADER = "$(TEST_HOST)";
+				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = RCGD5DNCWG;
@@ -504,6 +591,8 @@
 				PRODUCT_BUNDLE_IDENTIFIER = com.kaansenol.PuffTrackRealTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_OBJC_BRIDGING_HEADER = "PuffTrackRealTests/PuffTrackRealTests-Bridging-Header.h";
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/PuffTrackReal.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/PuffTrackReal";
@@ -515,6 +604,7 @@
 			buildSettings = {
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				BUNDLE_LOADER = "$(TEST_HOST)";
+				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = RCGD5DNCWG;
@@ -524,6 +614,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = com.kaansenol.PuffTrackRealTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_OBJC_BRIDGING_HEADER = "PuffTrackRealTests/PuffTrackRealTests-Bridging-Header.h";
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/PuffTrackReal.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/PuffTrackReal";

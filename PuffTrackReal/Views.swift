@@ -137,63 +137,6 @@ struct FinancesView: View {
     }
 }
 
-struct FriendsView: View {
-    @Environment(\.presentationMode) var presentationMode
-    @Environment(\.colorScheme) var colorScheme
-    @State private var newFriendName = ""
-    
-    var body: some View {
-        NavigationView {
-            List {
-                Section(header: Text("Add Friend")) {
-                    HStack {
-                        TextField("Friend's name", text: $newFriendName)
-                        Button(action: {
-                            // Add friend logic here
-                            newFriendName = ""
-                        }) {
-                            Image(systemName: "plus.circle.fill")
-                                .foregroundColor(.red)
-                        }
-                    }
-                }
-                
-                Section(header: Text("Your Friends")) {
-                    ForEach(1...5, id: \.self) { _ in
-                        friendRow()
-                    }
-                }
-            }
-            .listStyle(InsetGroupedListStyle())
-            .navigationTitle("Friends")
-            .navigationBarItems(trailing: Button("Done") {
-                presentationMode.wrappedValue.dismiss()
-            })
-        }
-        .accentColor(.red)
-    }
-    
-    private func friendRow() -> some View {
-        HStack {
-            Circle()
-                .fill(Color.red)
-                .frame(width: 40, height: 40)
-            VStack(alignment: .leading) {
-                Text("Friend Name")
-                    .font(.headline)
-                Text("15 puffs today")
-                    .font(.subheadline)
-                    .foregroundColor(.gray)
-            }
-            Spacer()
-            Text("-5%")
-                .foregroundColor(.green)
-        }
-    }
-}
-
-
-
 
 struct SettingsView: View {
     @ObservedObject var viewModel: PuffTrackViewModel

@@ -2,11 +2,10 @@
 //  PuffTrackRealTests.swift
 //  PuffTrackRealTests
 //
-//  Created by Kaan Şenol on 3.07.2024.
+//  Created by Kaan Şenol on 14.09.2024.
 //
 
 import XCTest
-@testable import PuffTrackReal
 
 final class PuffTrackRealTests: XCTestCase {
 
