@@ -10,7 +10,7 @@ import Combine
 import UserNotifications
 
 class PuffTrackViewModel: ObservableObject {
-    @Published private var model: PuffTrackData
+    @Published var model: PuffTrackData
     @Published var withdrawalStatus: String = ""
     @Published var withdrawalDescription: String = ""
     @Published var streak: Int = 0
@@ -151,8 +151,8 @@ class PuffTrackViewModel: ObservableObject {
         model.settings
     }
     
-    func addPuff() {
-        model.addPuff()
+    func addPuff(socialsViewModel: SocialsViewModel) {
+        model.addPuff(socialsViewModel: socialsViewModel)
         objectWillChange.send()  // Ensure the UI updates
         updateCalculations()
     }

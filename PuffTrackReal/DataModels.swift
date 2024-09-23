@@ -36,7 +36,7 @@ class PuffTrackData: ObservableObject {
         loadData()
     }
     
-    func addPuff() {
+    func addPuff(socialsViewModel: SocialsViewModel) {
         let newPuff = Puff(id: UUID(), timestamp: Date(), isSynced: false)
         puffs.append(newPuff)
         saveData()
@@ -71,11 +71,4 @@ class PuffTrackData: ObservableObject {
         return puffs.filter { calendar.isDate($0.timestamp, inSameDayAs: date) }.count
     }
     
-    func syncPuffs() {
-        // Implement your syncing logic here
-        // After syncing, update the isSynced status for synced puffs
-        // For example:
-        // puffs = puffs.map { Puff(id: $0.id, timestamp: $0.timestamp, isSynced: true) }
-        // saveData()
-    }
 }

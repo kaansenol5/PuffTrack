@@ -139,7 +139,7 @@ class SocialsViewModel: ObservableObject {
     // MARK: - User Session Methods
     
     func isUserLoggedIn() -> Bool {
-        return loadTokenFromKeychain() != nil
+        return loadTokenFromKeychain() != nil || serverData?.user.id != nil
     }
     
     func logout() {

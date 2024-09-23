@@ -10,12 +10,16 @@ import SwiftUI
 struct ContentView: View {
     @StateObject private var viewModel = PuffTrackViewModel()
     @StateObject private var socialsViewModel = SocialsViewModel()
+    @State private var syncer: Syncer?  // New StateObject for Syncer
     @State private var isSettingsPresented = false
     @State private var isMilestonesPresented = false
     @State private var isFriendsPresented = false
-    @State private var isAuthPresented = false  // New state for AuthView presentation
+    @State private var isAuthPresented = false
 
     @Environment(\.colorScheme) var colorScheme
+    
+
+    
     
     var body: some View {
         ZStack {
@@ -29,6 +33,10 @@ struct ContentView: View {
                 socialSection
             }
             .padding()
+        }.onAppear {
+            if syncer == nil {
+                syncer = Syncer(puffTrackViewModel: viewModel, socialsViewModel: socialsViewModel)
+            }
         }
         .sheet(isPresented: $isSettingsPresented) {
             SettingsView(viewModel: viewModel)
@@ -104,7 +112,7 @@ struct ContentView: View {
             }
             
             PuffButton(action: {
-                viewModel.addPuff()
+                viewModel.addPuff(socialsViewModel: socialsViewModel)
             })
             .position(x: 180, y: -30)
         }
@@ -194,27 +202,27 @@ struct ContentView: View {
                     .font(.headline)
                     .foregroundColor(textColor)
                 
-                ForEach(1...3, id: \.self) { _ in
+                ForEach(socialsViewModel.serverData?.friends.prefix(3) ?? []) { friend in
                     HStack {
                         Circle()
                             .fill(Color.red)
                             .frame(width: 40, height: 50)
                             .overlay(
-                                Text("FN") // Placeholder initials
+                                Text(getInitials(from: friend.name)) // Placeholder initials
                                     .foregroundColor(.white)
                                     .font(.headline)
                             )
                         VStack(alignment: .leading, spacing: 5) {
-                            Text("Friend Name")
+                            Text(friend.name)
                                 .foregroundColor(textColor)
                                 .font(.headline)
-                            Text("15 puffs today")
+                            Text("\(friend.puffsummary.puffsToday) puffs today")
                                 .font(.subheadline)
                                 .foregroundColor(.gray)
                         }
                         Spacer()
-                        Text("-5%")
-                            .foregroundColor(.green)
+                        Text("\(friend.puffsummary.changePercentage)%")
+                            .foregroundColor(.black)
                             .font(.subheadline)
                     }
                     .padding(.vertical, 5)
