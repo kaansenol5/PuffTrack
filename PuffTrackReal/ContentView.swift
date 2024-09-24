@@ -4,7 +4,6 @@
 //
 //  Created by Kaan Şenol on 3.07.2024.
 //
-
 import SwiftUI
 
 struct ContentView: View {
@@ -22,11 +21,13 @@ struct ContentView: View {
         GeometryReader { geometry in
             ScrollView {
                 VStack(spacing: geometry.size.height * 0.03) {
-                    headerSection
+                    headerSection(screenHeight: geometry.size.height)
                     puffTracker(size: geometry.size)
                     withdrawalTrackerSection
                     statsSection
-                    socialSection
+                    if geometry.size.height > 647 {
+                        socialSection
+                    }
                 }
                 .padding(.horizontal, geometry.size.width * 0.05)
                 .padding(.vertical, geometry.size.height * 0.02)
@@ -56,7 +57,7 @@ struct ContentView: View {
         }
     }
     
-    private var headerSection: some View {
+    private func headerSection(screenHeight: CGFloat) -> some View {
         ZStack {
             HStack {
                 Button(action: { isSettingsPresented.toggle() }) {
@@ -67,9 +68,26 @@ struct ContentView: View {
                 
                 Spacer()
                 
-                Circle()
-                    .fill(Color.red)
-                    .frame(width: 10, height: 10)
+                if screenHeight <= 647 {
+                    // Small screen: Make the friends button a system icon
+                    Button(action: {
+                        if socialsViewModel.isUserLoggedIn() {
+                            isFriendsPresented.toggle()
+                        } else {
+                            isAuthPresented.toggle()
+                        }
+                    }) {
+                        Image(systemName: "person.2.fill")
+                            .foregroundColor(.red)
+                            .imageScale(.large)
+                            .frame(width: 24, height: 24)
+                    }
+                } else {
+                    // Larger screens: Show the red dot as is
+                    Circle()
+                        .fill(Color.red)
+                        .frame(width: 10, height: 10)
+                }
             }
             
             Text("PuffTrack")
@@ -77,7 +95,7 @@ struct ContentView: View {
                 .foregroundColor(textColor)
         }
     }
-    
+
     private func puffTracker(size: CGSize) -> some View {
         VStack(spacing: size.height * 0.02) {
             ZStack {
@@ -309,10 +327,6 @@ struct StatCard: View {
     }
 }
 
-
-
-
-
-#Preview{
+#Preview {
     ContentView()
 }
