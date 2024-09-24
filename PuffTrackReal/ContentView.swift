@@ -10,30 +10,30 @@ import SwiftUI
 struct ContentView: View {
     @StateObject private var viewModel = PuffTrackViewModel()
     @StateObject private var socialsViewModel = SocialsViewModel()
-    @State private var syncer: Syncer?  // New StateObject for Syncer
+    @State private var syncer: Syncer?
     @State private var isSettingsPresented = false
     @State private var isMilestonesPresented = false
     @State private var isFriendsPresented = false
     @State private var isAuthPresented = false
 
     @Environment(\.colorScheme) var colorScheme
-    
 
-    
-    
     var body: some View {
-        ZStack {
-            backgroundColor.edgesIgnoringSafeArea(.all)
-            
-            VStack(spacing: 15) {
-                headerSection
-                puffTracker
-                withdrawalTrackerSection
-                statsSection
-                socialSection
+        GeometryReader { geometry in
+            ScrollView {
+                VStack(spacing: geometry.size.height * 0.03) {
+                    headerSection
+                    puffTracker(size: geometry.size)
+                    withdrawalTrackerSection
+                    statsSection
+                    socialSection
+                }
+                .padding(.horizontal, geometry.size.width * 0.05)
+                .padding(.vertical, geometry.size.height * 0.02)
             }
-            .padding()
-        }.onAppear {
+            .background(backgroundColor.edgesIgnoringSafeArea(.all))
+        }
+        .onAppear {
             if syncer == nil {
                 syncer = Syncer(puffTrackViewModel: viewModel, socialsViewModel: socialsViewModel)
             }
@@ -54,8 +54,8 @@ struct ContentView: View {
                 AuthView(socialsViewModel: socialsViewModel, isPresented: $isAuthPresented)
             }
         }
-
-    }    
+    }
+    
     private var headerSection: some View {
         ZStack {
             HStack {
@@ -78,25 +78,25 @@ struct ContentView: View {
         }
     }
     
-    private var puffTracker: some View {
-        VStack(spacing: 20) {
+    private func puffTracker(size: CGSize) -> some View {
+        VStack(spacing: size.height * 0.02) {
             ZStack {
                 Circle()
                     .trim(from: 0, to: 0.5)
                     .stroke(Color.gray.opacity(0.3), lineWidth: 20)
-                    .frame(width: 200, height: 200)
+                    .frame(width: min(size.width * 0.5, size.height * 0.3), height: min(size.width * 0.5, size.height * 0.3))
                     .rotationEffect(.degrees(180))
                 
                 Circle()
                     .trim(from: 0, to: min(CGFloat(viewModel.puffCount) / 100, 0.5))
                     .stroke(Color.red, lineWidth: 20)
-                    .frame(width: 200, height: 200)
+                    .frame(width: min(size.width * 0.5, size.height * 0.3), height: min(size.width * 0.5, size.height * 0.3))
                     .rotationEffect(.degrees(180))
                     .animation(.spring(), value: viewModel.puffCount)
                 
                 VStack {
                     Text("\(viewModel.puffCount)")
-                        .font(.system(size: 50, weight: .bold, design: .rounded))
+                        .font(.system(size: min(size.width * 0.12, size.height * 0.07), weight: .bold, design: .rounded))
                         .foregroundColor(textColor)
                     Text("PUFFS")
                         .font(.caption)
@@ -114,7 +114,7 @@ struct ContentView: View {
             PuffButton(action: {
                 viewModel.addPuff(socialsViewModel: socialsViewModel)
             })
-            .position(x: 180, y: -30)
+            .frame(width: min(size.width * 0.6, 250))
         }
     }
 
@@ -167,7 +167,6 @@ struct ContentView: View {
         return formatter.localizedString(for: viewModel.lastPuffTime, relativeTo: Date())
     }
 
-    
     private var statsSection: some View {
         VStack(spacing: 15) {
             HStack {
@@ -179,36 +178,42 @@ struct ContentView: View {
                     .font(.subheadline)
                     .foregroundColor(.secondary)
             }
-            .padding(.horizontal)
             
-            HStack(spacing: 15) {
-                StatCard(value: "\(viewModel.streak) days", icon: "flame.fill", color: .orange, action: { isMilestonesPresented.toggle() })
-                StatCard(value: "$\(String(format: "%.0f", viewModel.moneySaved))", icon: "dollarsign.circle.fill", color: .green, action: {})
+            GeometryReader { geometry in
+                HStack(spacing: 15) {
+                    StatCard(value: "\(viewModel.streak) days", icon: "flame.fill", color: .orange, action: { isMilestonesPresented.toggle() })
+                        .frame(width: geometry.size.width / 2 - 7.5)
+                    StatCard(value: "$\(String(format: "%.0f", viewModel.moneySaved))", icon: "dollarsign.circle.fill", color: .green, action: {})
+                        .frame(width: geometry.size.width / 2 - 7.5)
+                }
             }
+            .frame(height: 100)
         }
     }
 
-
     private var socialSection: some View {
         Button(action: {
-            if(socialsViewModel.isUserLoggedIn()){
+            if socialsViewModel.isUserLoggedIn() {
                 isFriendsPresented.toggle()
-            }
-            else{
+            } else {
                 isAuthPresented.toggle()
-            } }) {
+            }
+        }) {
             VStack(alignment: .leading, spacing: 1) {
                 Text("Friends")
                     .font(.headline)
                     .foregroundColor(textColor)
-                
+                if socialsViewModel.serverData?.friends.isEmpty ?? true {
+                    Text("No friends yet, click to add friends")
+                        .foregroundColor(.secondary)
+                }
                 ForEach(socialsViewModel.serverData?.friends.prefix(3) ?? []) { friend in
                     HStack {
                         Circle()
                             .fill(Color.red)
-                            .frame(width: 40, height: 50)
+                            .frame(width: 40, height: 40)
                             .overlay(
-                                Text(getInitials(from: friend.name)) // Placeholder initials
+                                Text(getInitials(from: friend.name))
                                     .foregroundColor(.white)
                                     .font(.headline)
                             )
@@ -222,7 +227,7 @@ struct ContentView: View {
                         }
                         Spacer()
                         Text("\(friend.puffsummary.changePercentage)%")
-                            .foregroundColor(.black)
+                            .foregroundColor(Int(friend.puffsummary.changePercentage) ?? 0 >= 0 ? .green : .red)
                             .font(.subheadline)
                     }
                     .padding(.vertical, 5)
@@ -247,7 +252,6 @@ struct ContentView: View {
     }
 }
 
-// PuffButton and StatCard remain the same
 struct PuffButton: View {
     let action: () -> Void
     @State private var isPressed = false
@@ -271,7 +275,8 @@ struct PuffButton: View {
                     .font(.system(size: 16, weight: .bold))
             }
             .foregroundColor(.white)
-            .frame(minWidth: 200, minHeight: 50)
+            .frame(maxWidth: .infinity)
+            .frame(height: 50)
             .background(Color.red)
             .cornerRadius(10)
             .shadow(color: Color.black.opacity(0.1), radius: 5, x: 0, y: 3)
@@ -298,12 +303,15 @@ struct StatCard: View {
                     .foregroundColor(.primary)
             }
             .padding()
-            .frame(maxWidth: .infinity)
             .background(Color.secondary.opacity(0.1))
             .cornerRadius(15)
         }
     }
 }
+
+
+
+
 
 #Preview{
     ContentView()
