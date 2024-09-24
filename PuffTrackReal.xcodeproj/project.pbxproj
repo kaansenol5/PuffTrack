@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		1FAFF658064294BE44D4AED9 /* Pods_PuffTrackReal.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A3CDB7A64601B9AADB206D2E /* Pods_PuffTrackReal.framework */; };
+		9D10B15E2CA3177500ABB4E7 /* Syncer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9D10B15D2CA3177500ABB4E7 /* Syncer.swift */; };
 		9D2C14FA2C95C3EA003DCD12 /* SocialsViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9D2C14F92C95C3EA003DCD12 /* SocialsViewModel.swift */; };
 		9D6E90A22C95E13000DBC81C /* PuffTrackRealTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9D6E90A12C95E13000DBC81C /* PuffTrackRealTests.swift */; };
 		9D6E90A62C95E73700DBC81C /* FriendsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9D6E90A52C95E73700DBC81C /* FriendsView.swift */; };
@@ -42,6 +43,7 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		9D10B15D2CA3177500ABB4E7 /* Syncer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Syncer.swift; sourceTree = "<group>"; };
 		9D2C14F92C95C3EA003DCD12 /* SocialsViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SocialsViewModel.swift; sourceTree = "<group>"; };
 		9D2D91712C7F726C00D45238 /* TODOS.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = TODOS.md; sourceTree = "<group>"; };
 		9D6E90A02C95E13000DBC81C /* PuffTrackRealTests-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "PuffTrackRealTests-Bridging-Header.h"; sourceTree = "<group>"; };
@@ -138,6 +140,7 @@
 				9D2D91712C7F726C00D45238 /* TODOS.md */,
 				9DC18E952C95DEE80081F76A /* AuthView.swift */,
 				9D6E90A52C95E73700DBC81C /* FriendsView.swift */,
+				9D10B15D2CA3177500ABB4E7 /* Syncer.swift */,
 			);
 			path = PuffTrackReal;
 			sourceTree = "<group>";
@@ -354,6 +357,7 @@
 				9DF40D9D2C7E6CA700CCBF46 /* Views.swift in Sources */,
 				9D2C14FA2C95C3EA003DCD12 /* SocialsViewModel.swift in Sources */,
 				9DF16EA52C35861800A1E56C /* ContentView.swift in Sources */,
+				9D10B15E2CA3177500ABB4E7 /* Syncer.swift in Sources */,
 				9D6E90A62C95E73700DBC81C /* FriendsView.swift in Sources */,
 				9D990AC12C7F4EDF00C58EDD /* DataModels.swift in Sources */,
 				9DF16EA32C35861800A1E56C /* PuffTrackRealApp.swift in Sources */,
