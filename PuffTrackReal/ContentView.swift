@@ -14,58 +14,66 @@ struct ContentView: View {
     @State private var isMilestonesPresented = false
     @State private var isFriendsPresented = false
     @State private var isAuthPresented = false
-
     @Environment(\.colorScheme) var colorScheme
+    @State private var onboardingComplete: Bool = UserDefaults.standard.bool(forKey: "onboardingComplete")
+    
 
+    
     var body: some View {
-        GeometryReader { geometry in
-            ScrollView {
-                VStack(spacing: geometry.size.height * 0.03) {
-                    headerSection(screenHeight: geometry.size.height)
-                    puffTracker(size: geometry.size)
-                    withdrawalTrackerSection
-                    statsSection
-                    if geometry.size.height > 647 {
-                        socialSection
+        if((!onboardingComplete)){
+            OnboardingView(isOnboardingComplete: $onboardingComplete, viewModel: viewModel)
+        }
+        else{
+            GeometryReader { geometry in
+                ScrollView {
+                    VStack(spacing: geometry.size.height * 0.03) {
+                        headerSection(screenHeight: geometry.size.height)
+                        puffTracker(size: geometry.size)
+                        withdrawalTrackerSection
+                        statsSection
+                        if geometry.size.height > 647 {
+                            socialSection
+                        }
                     }
+                    .padding(.horizontal, geometry.size.width * 0.05)
+                    .padding(.vertical, geometry.size.height * 0.02)
                 }
-                .padding(.horizontal, geometry.size.width * 0.05)
-                .padding(.vertical, geometry.size.height * 0.02)
+                .background(backgroundColor.edgesIgnoringSafeArea(.all))
+            }.alert(isPresented: $socialsViewModel.isErrorDisplayed) {
+                Alert(
+                    title: Text("Alert"),
+                    message: Text(socialsViewModel.errorMessage),
+                    dismissButton: .default(Text("OK")) {
+                        print("OK tapped")
+                        socialsViewModel.isErrorDisplayed = false
+                        socialsViewModel.errorMessage = ""
+                        
+                        
+                    }
+                )
             }
-            .background(backgroundColor.edgesIgnoringSafeArea(.all))
-        }.alert(isPresented: $socialsViewModel.isErrorDisplayed) {
-            Alert(
-                title: Text("Alert"),
-                message: Text(socialsViewModel.errorMessage ?? ""),
-                dismissButton: .default(Text("OK")) {
-                    print("OK tapped")
-                    socialsViewModel.isErrorDisplayed = false
-                    socialsViewModel.errorMessage = ""
-                    
-                    
+            .onAppear {
+                if syncer == nil {
+                    syncer = Syncer(puffTrackViewModel: viewModel, socialsViewModel: socialsViewModel)
                 }
-            )
-        }
-        .onAppear {
-            if syncer == nil {
-                syncer = Syncer(puffTrackViewModel: viewModel, socialsViewModel: socialsViewModel)
             }
-        }
-        .sheet(isPresented: $isSettingsPresented) {
-            SettingsView(viewModel: viewModel)
-        }
-        .sheet(isPresented: $isMilestonesPresented) {
-            MilestonesView(viewModel: viewModel)
-        }
-        .sheet(isPresented: $isAuthPresented) {
-            AuthView(socialsViewModel: socialsViewModel, isPresented: $isAuthPresented)
-        }
-        .sheet(isPresented: $isFriendsPresented) {
-            if socialsViewModel.isUserLoggedIn() {
-                FriendsView(socialsViewModel: socialsViewModel)
-            } else {
+            .sheet(isPresented: $isSettingsPresented) {
+                SettingsView(viewModel: viewModel)
+            }
+            .sheet(isPresented: $isMilestonesPresented) {
+                MilestonesView(viewModel: viewModel)
+            }
+            .sheet(isPresented: $isAuthPresented) {
                 AuthView(socialsViewModel: socialsViewModel, isPresented: $isAuthPresented)
             }
+            .sheet(isPresented: $isFriendsPresented) {
+                if socialsViewModel.isUserLoggedIn() {
+                    FriendsView(socialsViewModel: socialsViewModel)
+                } else {
+                    AuthView(socialsViewModel: socialsViewModel, isPresented: $isAuthPresented)
+                }
+            }
+
         }
     }
     

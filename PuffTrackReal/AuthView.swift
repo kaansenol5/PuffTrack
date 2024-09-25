@@ -108,18 +108,18 @@ struct AuthView: View {
     private var fieldsSection: some View {
         VStack(spacing: 15) {
             if !isLoginMode {
-                CustomTextField(icon: "person.fill", placeholder: "Name", text: $name)
+                AuthTextField(icon: "person.fill", placeholder: "Name", text: $name)
             }
             
-            CustomTextField(icon: "envelope.fill", placeholder: "Email", text: $email)
+            AuthTextField(icon: "envelope.fill", placeholder: "Email", text: $email)
                 .keyboardType(.emailAddress)
                 .autocapitalization(.none)
                 .textContentType(.emailAddress)
             
-            CustomTextField(icon: "lock.fill", placeholder: "Password", text: $password, isSecure: true)
+            AuthTextField(icon: "lock.fill", placeholder: "Password", text: $password, isSecure: true)
             
             if !isLoginMode {
-                CustomTextField(icon: "lock.fill", placeholder: "Confirm Password", text: $confirmPassword, isSecure: true)
+                AuthTextField(icon: "lock.fill", placeholder: "Confirm Password", text: $confirmPassword, isSecure: true)
             }
         }
         .padding()
@@ -178,7 +178,7 @@ struct AuthView: View {
     }
 }
 
-struct CustomTextField: View {
+struct AuthTextField: View {
     var icon: String
     var placeholder: String
     @Binding var text: String
