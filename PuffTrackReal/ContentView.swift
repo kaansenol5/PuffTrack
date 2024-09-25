@@ -33,6 +33,18 @@ struct ContentView: View {
                 .padding(.vertical, geometry.size.height * 0.02)
             }
             .background(backgroundColor.edgesIgnoringSafeArea(.all))
+        }.alert(isPresented: $socialsViewModel.isErrorDisplayed) {
+            Alert(
+                title: Text("Alert"),
+                message: Text(socialsViewModel.errorMessage ?? ""),
+                dismissButton: .default(Text("OK")) {
+                    print("OK tapped")
+                    socialsViewModel.isErrorDisplayed = false
+                    socialsViewModel.errorMessage = ""
+                    
+                    
+                }
+            )
         }
         .onAppear {
             if syncer == nil {

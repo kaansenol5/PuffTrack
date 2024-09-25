@@ -14,7 +14,13 @@ class SocialsViewModel: ObservableObject {
     
     private var socketManager: SocketManager?
     private var socket: SocketIOClient?
-    
+    @Published var isErrorDisplayed: Bool = false {
+        didSet {
+            print("isErrorDisplayed changed to: \(isErrorDisplayed)")
+            print(errorMessage)
+        }
+    }
+    @Published var errorMessage: String = ""
     @Published var serverData: FullSyncResponse?
     private let baseURL = "http://localhost:3000"
     private var token: String?
@@ -45,14 +51,53 @@ class SocialsViewModel: ObservableObject {
         request.httpBody = try? JSONSerialization.data(withJSONObject: body)
         
         URLSession.shared.dataTask(with: request) { [weak self] data, response, error in
-            // Handle errors
+            // Handle network errors
             if let error = error {
-                completion(.failure(error))
+                DispatchQueue.main.async {
+                    print("Network Error: \(error.localizedDescription)")
+                    completion(.failure(error))
+                    self?.isErrorDisplayed = true
+                    self?.errorMessage = "Please check your network connection"
+                }
+                return
+            }
+            
+            // Check HTTP status code
+            guard let httpResponse = response as? HTTPURLResponse else {
+                let error = NSError(domain: "InvalidResponse", code: 0, userInfo: [NSLocalizedDescriptionKey: "Invalid response type"])
+                DispatchQueue.main.async {
+                    print("Error: Invalid response type")
+                    completion(.failure(error))
+                    self?.isErrorDisplayed = true
+                    self?.errorMessage = "Unexpected error, please try again later"
+                }
+
+                return
+            }
+            
+            // Handle HTTP errors
+            if !(200...299).contains(httpResponse.statusCode) {
+                let errorMessage = String(data: data ?? Data(), encoding: .utf8) ?? "No error message"
+                let error = NSError(domain: "HTTPError", code: httpResponse.statusCode, userInfo: [NSLocalizedDescriptionKey: errorMessage])
+                DispatchQueue.main.async {
+                    print("HTTP Error \(httpResponse.statusCode): \(errorMessage)")
+                    self?.isErrorDisplayed = true
+                    self?.errorMessage = errorMessage
+                    completion(.failure(error))
+                }
                 return
             }
             
             guard let data = data else {
-                completion(.failure(NSError(domain: "No data received", code: 0)))
+                let error = NSError(domain: "NoData", code: 0, userInfo: [NSLocalizedDescriptionKey: "No data received"])
+                DispatchQueue.main.async{
+                    print("Error: No data received")
+                    completion(.failure(error))
+                    self?.isErrorDisplayed = true
+                    self?.errorMessage = "Unexpected error, please try again later"
+
+                }
+
                 return
             }
             
@@ -67,9 +112,18 @@ class SocialsViewModel: ObservableObject {
                     }
                     completion(.success(token))
                 } else {
-                    completion(.failure(NSError(domain: "Invalid response format", code: 0)))
+                    let error = NSError(domain: "InvalidFormat", code: 0, userInfo: [NSLocalizedDescriptionKey: "Invalid response format"])
+                    print("Error: Invalid response format")
+                    self?.isErrorDisplayed = true
+                    self?.errorMessage = "Unexpected error, please try again later"
+
+                    completion(.failure(error))
                 }
             } catch {
+                print("JSON Parsing Error: \(error.localizedDescription)")
+                self?.isErrorDisplayed = true
+                self?.errorMessage = "Unexpected error, please try again later"
+
                 completion(.failure(error))
             }
         }.resume()
@@ -85,14 +139,53 @@ class SocialsViewModel: ObservableObject {
         request.httpBody = try? JSONSerialization.data(withJSONObject: body)
         
         URLSession.shared.dataTask(with: request) { [weak self] data, response, error in
-            // Handle errors
+            // Handle network errors
             if let error = error {
-                completion(.failure(error))
+                DispatchQueue.main.async {
+                    print("Network Error: \(error.localizedDescription)")
+                    completion(.failure(error))
+                    self?.isErrorDisplayed = true
+                    self?.errorMessage = "Please check your network connection"
+
+                }
+                return
+            }
+            
+            // Check HTTP status code
+            guard let httpResponse = response as? HTTPURLResponse else {
+                let error = NSError(domain: "InvalidResponse", code: 0, userInfo: [NSLocalizedDescriptionKey: "Invalid response type"])
+                DispatchQueue.main.async {
+                    print("Error: Invalid response type")
+                    completion(.failure(error))
+                    self?.isErrorDisplayed = true
+                    self?.errorMessage = "Unexpected error, please try again later"
+
+                }
+                return
+            }
+            
+            // Handle HTTP errors
+            if !(200...299).contains(httpResponse.statusCode) {
+                let errorMessage = String(data: data ?? Data(), encoding: .utf8) ?? "No error message"
+                let error = NSError(domain: "HTTPError", code: httpResponse.statusCode, userInfo: [NSLocalizedDescriptionKey: errorMessage])
+                DispatchQueue.main.async {
+                    print("HTTP Error \(httpResponse.statusCode): \(errorMessage)")
+                    self?.isErrorDisplayed = true
+                    self?.errorMessage = errorMessage
+                    completion(.failure(error))
+                }
                 return
             }
             
             guard let data = data else {
-                completion(.failure(NSError(domain: "No data received", code: 0)))
+                let error = NSError(domain: "NoData", code: 0, userInfo: [NSLocalizedDescriptionKey: "No data received"])
+                DispatchQueue.main.async {
+                    print("Error: No data received")
+                    completion(.failure(error))
+                    self?.isErrorDisplayed = true
+                    self?.errorMessage = "Unexpected error, please try again later"
+                }
+
                 return
             }
             
@@ -107,9 +200,18 @@ class SocialsViewModel: ObservableObject {
                     }
                     completion(.success(token))
                 } else {
-                    completion(.failure(NSError(domain: "Invalid response format", code: 0)))
+                    let error = NSError(domain: "InvalidFormat", code: 0, userInfo: [NSLocalizedDescriptionKey: "Invalid response format"])
+                    print("Error: Invalid response format")
+                    self?.isErrorDisplayed = true
+                    self?.errorMessage = "Unexpected error, please try again later"
+
+                    completion(.failure(error))
                 }
             } catch {
+                print("JSON Parsing Error: \(error.localizedDescription)")
+                self?.isErrorDisplayed = true
+                self?.errorMessage = "Unexpected error, please try again later"
+
                 completion(.failure(error))
             }
         }.resume()
@@ -202,6 +304,22 @@ class SocialsViewModel: ObservableObject {
                 
             } catch {
                 print("Error decoding JSON: \(error)")
+            }
+        }
+        
+        socket?.on("error") {[weak self] data, ack in
+            guard let self = self,
+                  let infoData = data.first as? [String: Any],
+                  let errorResponse = infoData["error"] as? [String: Any]
+            else{
+                print("Invalid data received")
+                return
+            }
+            do{
+                print("Recieved Socket Error")
+                self.isErrorDisplayed = true
+                self.errorMessage = "Socket Error: \(errorResponse["message"] ?? "Unknown")"
+
             }
         }
         

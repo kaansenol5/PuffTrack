@@ -40,6 +40,18 @@ struct AuthView: View {
                 actionButton
             }
             .padding()
+        }.alert(isPresented: $socialsViewModel.isErrorDisplayed) {
+            Alert(
+                title: Text("Alert Title"),
+                message: Text(socialsViewModel.errorMessage ?? ""),
+                dismissButton: .default(Text("OK")) {
+                    print("OK tapped")
+                    socialsViewModel.isErrorDisplayed = false
+                    socialsViewModel.errorMessage = ""
+                    
+                    
+                }
+            )
         }
     }
     

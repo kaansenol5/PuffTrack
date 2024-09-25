@@ -33,6 +33,17 @@ struct FriendsView: View {
             }
             .navigationBarHidden(true)
             .background(backgroundColor.edgesIgnoringSafeArea(.all))
+        }.alert(isPresented: $socialsViewModel.isErrorDisplayed) {
+            Alert(
+                title: Text("Alert"),
+                message: Text(socialsViewModel.errorMessage ?? ""),
+                dismissButton: .default(Text("OK")) {
+                    print("OK tapped")
+                    socialsViewModel.isErrorDisplayed = false
+                    socialsViewModel.errorMessage = ""
+                    
+                }
+            )
         }
     }
     
