@@ -164,13 +164,6 @@ struct SettingsView: View {
                 Section(header: Text("Notifications")) {
                     Toggle("Enable Notifications", isOn: $viewModel.notificationsEnabled)
                 }
-                
-                Section {
-                    Button("Reset All Data") {
-                        // Implement reset functionality
-                    }
-                    .foregroundColor(.red)
-                }
             }
             .navigationTitle("Settings")
             .navigationBarItems(trailing: Button("Save") {

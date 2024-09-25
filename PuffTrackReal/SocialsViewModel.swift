@@ -22,7 +22,7 @@ class SocialsViewModel: ObservableObject {
     }
     @Published var errorMessage: String = ""
     @Published var serverData: FullSyncResponse?
-    private let baseURL = "http://localhost:3000"
+    private let baseURL = "http://192.168.1.7:3000"
     private var token: String?
     var serverPuffCount: Int = 0
     private let keychainServiceName = "com.yourapp.identifier" // Replace with your app's bundle identifier

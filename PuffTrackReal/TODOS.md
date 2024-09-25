@@ -1,15 +1,7 @@
 #  todos
 
-- add in friends / backend / integration
-- onboarding
-
-- long term data graph
 - in-app-purchase support
-- app review
+- sign in with apple
 
 # extra
 - icon
-- website
-
-# done
-- notification

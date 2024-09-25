@@ -1,0 +1,24 @@
+PODS:
+  - KeychainAccess (4.2.2)
+  - Socket.IO-Client-Swift (16.1.0):
+    - Starscream (~> 4.0.6)
+  - Starscream (4.0.8)
+
+DEPENDENCIES:
+  - KeychainAccess
+  - Socket.IO-Client-Swift
+
+SPEC REPOS:
+  trunk:
+    - KeychainAccess
+    - Socket.IO-Client-Swift
+    - Starscream
+
+SPEC CHECKSUMS:
+  KeychainAccess: c0c4f7f38f6fc7bbe58f5702e25f7bd2f65abf51
+  Socket.IO-Client-Swift: ee4b8f80a3db18dd7f32b266ddf273310609443c
+  Starscream: 19b5533ddb925208db698f0ac508a100b884a1b9
+
+PODFILE CHECKSUM: 08b3580db4e628520e3191cb40f2533bdb756343
+
+COCOAPODS: 1.15.2

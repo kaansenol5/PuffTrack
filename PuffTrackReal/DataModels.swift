@@ -39,9 +39,16 @@ class PuffTrackData: ObservableObject {
     func addPuff(socialsViewModel: SocialsViewModel) {
         let newPuff = Puff(id: UUID(), timestamp: Date(), isSynced: false)
         puffs.append(newPuff)
+        removeOldPuffs()
         saveData()
     }
     
+    
+    func removeOldPuffs() {
+        let thirtyDaysAgo = Calendar.current.date(byAdding: .day, value: -30, to: Date())!
+        puffs = puffs.filter { $0.timestamp > thirtyDaysAgo }
+        saveData()
+    }
     private func loadData() {
         if let data = UserDefaults.standard.data(forKey: "puffs") {
             if let decoded = try? JSONDecoder().decode([Puff].self, from: data) {
