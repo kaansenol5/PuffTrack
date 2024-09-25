@@ -24,7 +24,7 @@ class SocialsViewModel: ObservableObject {
     @Published var serverData: FullSyncResponse?
     private let baseURL = "http://localhost:3000"
     private var token: String?
-    
+    var serverPuffCount: Int = 0
     private let keychainServiceName = "com.yourapp.identifier" // Replace with your app's bundle identifier
     private let tokenKey = "authToken"
     
@@ -71,7 +71,7 @@ class SocialsViewModel: ObservableObject {
                     self?.isErrorDisplayed = true
                     self?.errorMessage = "Unexpected error, please try again later"
                 }
-
+                
                 return
             }
             
@@ -95,9 +95,9 @@ class SocialsViewModel: ObservableObject {
                     completion(.failure(error))
                     self?.isErrorDisplayed = true
                     self?.errorMessage = "Unexpected error, please try again later"
-
+                    
                 }
-
+                
                 return
             }
             
@@ -116,14 +116,14 @@ class SocialsViewModel: ObservableObject {
                     print("Error: Invalid response format")
                     self?.isErrorDisplayed = true
                     self?.errorMessage = "Unexpected error, please try again later"
-
+                    
                     completion(.failure(error))
                 }
             } catch {
                 print("JSON Parsing Error: \(error.localizedDescription)")
                 self?.isErrorDisplayed = true
                 self?.errorMessage = "Unexpected error, please try again later"
-
+                
                 completion(.failure(error))
             }
         }.resume()
@@ -146,7 +146,7 @@ class SocialsViewModel: ObservableObject {
                     completion(.failure(error))
                     self?.isErrorDisplayed = true
                     self?.errorMessage = "Please check your network connection"
-
+                    
                 }
                 return
             }
@@ -159,7 +159,7 @@ class SocialsViewModel: ObservableObject {
                     completion(.failure(error))
                     self?.isErrorDisplayed = true
                     self?.errorMessage = "Unexpected error, please try again later"
-
+                    
                 }
                 return
             }
@@ -185,7 +185,7 @@ class SocialsViewModel: ObservableObject {
                     self?.isErrorDisplayed = true
                     self?.errorMessage = "Unexpected error, please try again later"
                 }
-
+                
                 return
             }
             
@@ -204,14 +204,14 @@ class SocialsViewModel: ObservableObject {
                     print("Error: Invalid response format")
                     self?.isErrorDisplayed = true
                     self?.errorMessage = "Unexpected error, please try again later"
-
+                    
                     completion(.failure(error))
                 }
             } catch {
                 print("JSON Parsing Error: \(error.localizedDescription)")
                 self?.isErrorDisplayed = true
                 self?.errorMessage = "Unexpected error, please try again later"
-
+                
                 completion(.failure(error))
             }
         }.resume()
@@ -287,7 +287,7 @@ class SocialsViewModel: ObservableObject {
         socket?.on("update") { [weak self] data, ack in
             guard let self = self,
                   let infoData = data.first as? [String: Any],
-                     let syncResponse = infoData["sync"] as? [String: Any]
+                  let syncResponse = infoData["sync"] as? [String: Any]
             else{
                 print("Invalid data received")
                 return
@@ -318,12 +318,26 @@ class SocialsViewModel: ObservableObject {
             self.handleServerError(errorMessage)
         }
         
-
+        socket?.on("puffCount") { [weak self] data, ack in
+            guard let self = self,
+                  let infoData = data.first as? [String: Any],
+                  let serverPuffCount = infoData["puffCount"] as? Int
+            else {
+                print("Invalid error data received")
+                return
+            }
+            do{
+                self.serverPuffCount = serverPuffCount
+            }
+        }
+        
+        
         socket?.connect()
     }
+    
     private func handleServerError(_ message: String) {
         DispatchQueue.main.async { [weak self] in
-            if message.lowercased().contains("authentication") || message.lowercased().contains("unauthorized") {
+            if message.lowercased().contains("authentication") || message.lowercased().contains("unauthorized") || message.lowercased().contains("user does not exist"){
                 self?.logout()
                 self?.isErrorDisplayed = true
                 self?.errorMessage = "Authentication failed. Please log in again."
@@ -333,8 +347,8 @@ class SocialsViewModel: ObservableObject {
             }
         }
     }
-
-
+    
+    
     private func handleConnectionError(_ data: [Any]) {
         DispatchQueue.main.async { [weak self] in
             if let error = data.first as? String, error.contains("Authentication error") {
@@ -354,13 +368,18 @@ class SocialsViewModel: ObservableObject {
             self?.errorMessage = "Disconnected from server. Please check your internet connection."
         }
     }
-
+    
     
     func sendEvent(event: String, withData data: [String: Any]? = nil) {
+        guard let socket = socket, socket.status == .connected else {
+            print("Socket is not connected. Event not sent:", event)
+            return
+        }
+        
         if let data = data {
-            socket?.emit(event, data)
+            socket.emit(event, data)
         } else {
-            socket?.emit(event)
+            socket.emit(event)
         }
     }
 }

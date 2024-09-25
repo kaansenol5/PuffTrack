@@ -143,6 +143,7 @@ struct ContentView: View {
             
             PuffButton(action: {
                 viewModel.addPuff(socialsViewModel: socialsViewModel)
+                syncer?.syncUnsynedPuffs()
             })
             .frame(width: min(size.width * 0.6, 250))
         }

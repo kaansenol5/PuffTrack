@@ -14,11 +14,11 @@ class Syncer: ObservableObject {
     private var socialsViewModel: SocialsViewModel
     private var timer: Timer?
     private var cancellables = Set<AnyCancellable>()
-
+    private var syncing = false
     init(puffTrackViewModel: PuffTrackViewModel, socialsViewModel: SocialsViewModel) {
         self.puffTrackViewModel = puffTrackViewModel
         self.socialsViewModel = socialsViewModel
-        setupTimer()
+      //  setupTimer()
     }
 
     private func setupTimer() {
@@ -28,23 +28,28 @@ class Syncer: ObservableObject {
     }
 
     func syncUnsynedPuffs() {
-        let unsyncedPuffs = puffTrackViewModel.model.puffs.filter { !$0.isSynced }
-        if unsyncedPuffs.isEmpty{
-            print("not syncing")
-            print(unsyncedPuffs)
+        if(syncing){
             return
         }
-
-        let puffTimestamps = unsyncedPuffs.map { $0.timestamp.timeIntervalSince1970 }
-        print("syncing")
-
-        socialsViewModel.sendEvent(event: "addPuffs", withData: ["puffs": puffTimestamps])
-
-        // Mark puffs as synced locally
-        for puff in unsyncedPuffs {
-            if let index = puffTrackViewModel.model.puffs.firstIndex(where: { $0.id == puff.id }) {
-                puffTrackViewModel.model.puffs[index].isSynced = true
+        syncing = true
+        DispatchQueue.main.asyncAfter(deadline: .now() + 10) { [self] in
+            socialsViewModel.sendEvent(event: "getPuffCount")
+        }
+        DispatchQueue.main.asyncAfter(deadline: .now() + 20) { [self] in
+        
+            let unsyncedPuffCount = puffTrackViewModel.model.puffs.count - socialsViewModel.serverPuffCount
+            if(unsyncedPuffCount < 0){
+                return
+                //TODO: handle this 
             }
+            let unsyncedPuffs: [Puff] = puffTrackViewModel.model.puffs.suffix(unsyncedPuffCount)
+            if unsyncedPuffs.isEmpty{
+                return
+            }
+            print("Syncing \(unsyncedPuffs.count) puffs")
+            let timestamps = unsyncedPuffs.map { Int($0.timestamp.timeIntervalSince1970 * 1000) }
+            socialsViewModel.sendEvent(event: "addPuffs", withData: ["puffs":timestamps])
+            syncing = false
         }
     }
 
