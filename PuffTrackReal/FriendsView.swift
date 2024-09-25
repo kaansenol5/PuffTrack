@@ -131,9 +131,7 @@ struct FriendsView: View {
                          .foregroundColor(textColor)
                      
                      ForEach(socialsViewModel.serverData?.sentFriendRequests ?? []) { request in
-                         OutgoingRequestRow(request: request, cancelAction: {
-                             // Handle cancel action
-                         })
+                         OutgoingRequestRow(request: request, socialsViewModel: socialsViewModel)
                      }
                  }
                  .padding()
@@ -220,7 +218,7 @@ struct IncomingRequestRow: View {
         socialsViewModel.sendEvent(event: "acceptRequest", withData: ["requestId": request.id])
     }
     func declineAction(){
-        socialsViewModel.sendEvent(event: "declineRequest", withData: ["requestId": request.id])
+        socialsViewModel.sendEvent(event: "rejectRequest", withData: ["requestId": request.id])
     }
     @Environment(\.colorScheme) var colorScheme
     
@@ -259,7 +257,10 @@ struct IncomingRequestRow: View {
 
 struct OutgoingRequestRow: View {
     var request: FriendRequest
-    var cancelAction: () -> Void
+    @ObservedObject var socialsViewModel: SocialsViewModel
+    func cancelAction(){
+        socialsViewModel.sendEvent(event: "cancelRequest", withData: ["requestId": request.id])
+    }
     
     @Environment(\.colorScheme) var colorScheme
     

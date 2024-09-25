@@ -276,7 +276,7 @@ class SocialsViewModel: ObservableObject {
         
         socket?.on(clientEvent: .error) { [weak self] data, ack in
             print("Socket error: \(data)")
-            self?.handleSocketError(data)
+            self?.handleConnectionError(data)
         }
         
         socket?.on(clientEvent: .reconnect) { data, ack in
@@ -307,29 +307,54 @@ class SocialsViewModel: ObservableObject {
             }
         }
         
-        socket?.on("error") {[weak self] data, ack in
+        socket?.on("error") { [weak self] data, ack in
             guard let self = self,
                   let infoData = data.first as? [String: Any],
-                  let errorResponse = infoData["error"] as? [String: Any]
-            else{
-                print("Invalid data received")
+                  let errorMessage = infoData["message"] as? String
+            else {
+                print("Invalid error data received")
                 return
             }
-            do{
-                print("Recieved Socket Error")
-                self.isErrorDisplayed = true
-                self.errorMessage = "Socket Error: \(errorResponse["message"] ?? "Unknown")"
-
-            }
+            self.handleServerError(errorMessage)
         }
         
+
         socket?.connect()
     }
-    
-    private func handleSocketError(_ data: [Any]) {
-        // Check if the error is due to authentication failure
-        logout()
+    private func handleServerError(_ message: String) {
+        DispatchQueue.main.async { [weak self] in
+            if message.lowercased().contains("authentication") || message.lowercased().contains("unauthorized") {
+                self?.logout()
+                self?.isErrorDisplayed = true
+                self?.errorMessage = "Authentication failed. Please log in again."
+            } else {
+                self?.isErrorDisplayed = true
+                self?.errorMessage = "Server Error: \(message)"
+            }
+        }
     }
+
+
+    private func handleConnectionError(_ data: [Any]) {
+        DispatchQueue.main.async { [weak self] in
+            if let error = data.first as? String, error.contains("Authentication error") {
+                self?.logout()
+                self?.isErrorDisplayed = true
+                self?.errorMessage = "Authentication failed. Please log in again."
+            } else {
+                self?.isErrorDisplayed = true
+                self?.errorMessage = "Failed to connect. Please check your internet connection and try again."
+            }
+        }
+    }
+    
+    private func handleDisconnect() {
+        DispatchQueue.main.async { [weak self] in
+            self?.isErrorDisplayed = true
+            self?.errorMessage = "Disconnected from server. Please check your internet connection."
+        }
+    }
+
     
     func sendEvent(event: String, withData data: [String: Any]? = nil) {
         if let data = data {
