@@ -32,25 +32,35 @@ class Syncer: ObservableObject {
             return
         }
         syncing = true
-        DispatchQueue.main.asyncAfter(deadline: .now() + 10) { [self] in
-            socialsViewModel.sendEvent(event: "getPuffCount")
-        }
-        DispatchQueue.main.asyncAfter(deadline: .now() + 20) { [self] in
+        DispatchQueue.main.asyncAfter(deadline: .now() + 10, execute: { [ self] in
+            let unsyncedPuffs = puffTrackViewModel.model.puffs.filter { !$0.isSynced }
+            let puffData = unsyncedPuffs.map { puff in
+                return [
+                    "id": puff.id.uuidString, // convert UUID to a string
+                    "timestamp": Int(puff.timestamp.timeIntervalSince1970), // convert timestamp to seconds since 1970
+                    "isSynced": puff.isSynced
+                ] as [String : Any] // explicitly declare the dictionary type
+            }
+            socialsViewModel.sendEvent(event: "addPuffs", withData: ["puffs": puffData])
+        })
+
         
-            let unsyncedPuffCount = puffTrackViewModel.model.puffs.count - socialsViewModel.serverPuffCount
-            if(unsyncedPuffCount < 0){
-                return
-                //TODO: handle this 
+        DispatchQueue.main.asyncAfter(deadline: .now() + 25, execute: { [ self] in
+            for (index, puff) in puffTrackViewModel.model.puffs.enumerated() {
+                if socialsViewModel.lastSyncedPuffs.contains(puff.id.uuidString) {
+                    // Create a mutable copy of puff
+                    var updatedPuff = puff
+                    print("puffsync")
+                    // Modify the isSynced property
+                    updatedPuff.isSynced = true
+                    // Replace the original puff in the array
+                    puffTrackViewModel.model.puffs[index] = updatedPuff
+                }
             }
-            let unsyncedPuffs: [Puff] = puffTrackViewModel.model.puffs.suffix(unsyncedPuffCount)
-            if unsyncedPuffs.isEmpty{
-                return
-            }
-            print("Syncing \(unsyncedPuffs.count) puffs")
-            let timestamps = unsyncedPuffs.map { Int($0.timestamp.timeIntervalSince1970 * 1000) }
-            socialsViewModel.sendEvent(event: "addPuffs", withData: ["puffs":timestamps])
             syncing = false
-        }
+        })
+        
+
     }
 
     func startSync() {

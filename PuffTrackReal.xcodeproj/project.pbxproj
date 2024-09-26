@@ -54,6 +54,7 @@
 		9D990AC22C7F4EED00C58EDD /* CalculationEngine.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CalculationEngine.swift; sourceTree = "<group>"; };
 		9D990AC42C7F4F0700C58EDD /* ViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewModel.swift; sourceTree = "<group>"; };
 		9DA5AC4F2CA47E4800D374D8 /* OnboardingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnboardingView.swift; sourceTree = "<group>"; };
+		9DA5AC512CA5DBCE00D374D8 /* PuffTrackReal.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = PuffTrackReal.entitlements; sourceTree = "<group>"; };
 		9DC18E952C95DEE80081F76A /* AuthView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthView.swift; sourceTree = "<group>"; };
 		9DF16E9F2C35861800A1E56C /* PuffTrackReal.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = PuffTrackReal.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		9DF16EA22C35861800A1E56C /* PuffTrackRealApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PuffTrackRealApp.swift; sourceTree = "<group>"; };
@@ -130,6 +131,7 @@
 		9DF16EA12C35861800A1E56C /* PuffTrackReal */ = {
 			isa = PBXGroup;
 			children = (
+				9DA5AC512CA5DBCE00D374D8 /* PuffTrackReal.entitlements */,
 				9DF16EA22C35861800A1E56C /* PuffTrackRealApp.swift */,
 				9DF16EA42C35861800A1E56C /* ContentView.swift */,
 				9DF16EA62C35861800A1E56C /* Assets.xcassets */,
@@ -530,6 +532,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = PuffTrackReal/PuffTrackReal.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_ASSET_PATHS = "\"PuffTrackReal/Preview Content\"";
@@ -546,7 +549,7 @@
 					"@executable_path/Frameworks",
 				);
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.kaansenol.PuffTrackReal;
+				PRODUCT_BUNDLE_IDENTIFIER = com.kaansenol.PuffTrack;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
@@ -560,6 +563,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = PuffTrackReal/PuffTrackReal.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_ASSET_PATHS = "\"PuffTrackReal/Preview Content\"";
@@ -576,7 +580,7 @@
 					"@executable_path/Frameworks",
 				);
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.kaansenol.PuffTrackReal;
+				PRODUCT_BUNDLE_IDENTIFIER = com.kaansenol.PuffTrack;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
