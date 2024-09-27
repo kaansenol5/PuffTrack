@@ -15,7 +15,7 @@ struct ContentView: View {
     @State private var isFriendsPresented = false
     @State private var isAuthPresented = false
     @Environment(\.colorScheme) var colorScheme
-    @State private var onboardingComplete: Bool = UserDefaults.standard.bool(forKey: "onboardingComplete")
+    @State private var onboardingComplete: Bool = true //UserDefaults.standard.bool(forKey: "onboardingComplete")
     
 
     
@@ -58,7 +58,7 @@ struct ContentView: View {
                 }
             }
             .sheet(isPresented: $isSettingsPresented) {
-                SettingsView(viewModel: viewModel)
+                SettingsView(viewModel: viewModel, socialsViewModel: socialsViewModel, isAuthViewPresented: isAuthPresented)
             }
             .sheet(isPresented: $isMilestonesPresented) {
                 MilestonesView(viewModel: viewModel)

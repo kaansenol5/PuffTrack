@@ -16,6 +16,7 @@
 		9D990AC32C7F4EED00C58EDD /* CalculationEngine.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9D990AC22C7F4EED00C58EDD /* CalculationEngine.swift */; };
 		9D990AC52C7F4F0700C58EDD /* ViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9D990AC42C7F4F0700C58EDD /* ViewModel.swift */; };
 		9DA5AC502CA47E4800D374D8 /* OnboardingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9DA5AC4F2CA47E4800D374D8 /* OnboardingView.swift */; };
+		9DA5AC532CA5F3B200D374D8 /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9DA5AC522CA5F3B200D374D8 /* SettingsView.swift */; };
 		9DC18E962C95DEE80081F76A /* AuthView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9DC18E952C95DEE80081F76A /* AuthView.swift */; };
 		9DF16EA32C35861800A1E56C /* PuffTrackRealApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9DF16EA22C35861800A1E56C /* PuffTrackRealApp.swift */; };
 		9DF16EA52C35861800A1E56C /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9DF16EA42C35861800A1E56C /* ContentView.swift */; };
@@ -23,7 +24,7 @@
 		9DF16EAA2C35861800A1E56C /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 9DF16EA92C35861800A1E56C /* Preview Assets.xcassets */; };
 		9DF16EBE2C35861900A1E56C /* PuffTrackRealUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9DF16EBD2C35861900A1E56C /* PuffTrackRealUITests.swift */; };
 		9DF16EC02C35861900A1E56C /* PuffTrackRealUITestsLaunchTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9DF16EBF2C35861900A1E56C /* PuffTrackRealUITestsLaunchTests.swift */; };
-		9DF40D9D2C7E6CA700CCBF46 /* Views.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9DF40D9C2C7E6CA700CCBF46 /* Views.swift */; };
+		9DF40D9D2C7E6CA700CCBF46 /* MilestonesView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9DF40D9C2C7E6CA700CCBF46 /* MilestonesView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -55,17 +56,18 @@
 		9D990AC42C7F4F0700C58EDD /* ViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewModel.swift; sourceTree = "<group>"; };
 		9DA5AC4F2CA47E4800D374D8 /* OnboardingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnboardingView.swift; sourceTree = "<group>"; };
 		9DA5AC512CA5DBCE00D374D8 /* PuffTrackReal.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = PuffTrackReal.entitlements; sourceTree = "<group>"; };
+		9DA5AC522CA5F3B200D374D8 /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
 		9DC18E952C95DEE80081F76A /* AuthView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthView.swift; sourceTree = "<group>"; };
-		9DF16E9F2C35861800A1E56C /* PuffTrackReal.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = PuffTrackReal.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		9DF16E9F2C35861800A1E56C /* PuffTrack.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = PuffTrack.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		9DF16EA22C35861800A1E56C /* PuffTrackRealApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PuffTrackRealApp.swift; sourceTree = "<group>"; };
 		9DF16EA42C35861800A1E56C /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
 		9DF16EA62C35861800A1E56C /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		9DF16EA92C35861800A1E56C /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
-		9DF16EAF2C35861900A1E56C /* PuffTrackRealTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = PuffTrackRealTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
-		9DF16EB92C35861900A1E56C /* PuffTrackRealUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = PuffTrackRealUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		9DF16EAF2C35861900A1E56C /* PuffTrackTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = PuffTrackTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		9DF16EB92C35861900A1E56C /* PuffTrackUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = PuffTrackUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		9DF16EBD2C35861900A1E56C /* PuffTrackRealUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PuffTrackRealUITests.swift; sourceTree = "<group>"; };
 		9DF16EBF2C35861900A1E56C /* PuffTrackRealUITestsLaunchTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PuffTrackRealUITestsLaunchTests.swift; sourceTree = "<group>"; };
-		9DF40D9C2C7E6CA700CCBF46 /* Views.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Views.swift; sourceTree = "<group>"; };
+		9DF40D9C2C7E6CA700CCBF46 /* MilestonesView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MilestonesView.swift; sourceTree = "<group>"; };
 		A3CDB7A64601B9AADB206D2E /* Pods_PuffTrackReal.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_PuffTrackReal.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		A5B3213E8C61C7DAEE79609B /* Pods-PuffTrackReal.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-PuffTrackReal.release.xcconfig"; path = "Target Support Files/Pods-PuffTrackReal/Pods-PuffTrackReal.release.xcconfig"; sourceTree = "<group>"; };
 		A6F1327F21A5F48A54DCCE8D /* Pods-PuffTrackReal.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-PuffTrackReal.debug.xcconfig"; path = "Target Support Files/Pods-PuffTrackReal/Pods-PuffTrackReal.debug.xcconfig"; sourceTree = "<group>"; };
@@ -121,9 +123,9 @@
 		9DF16EA02C35861800A1E56C /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				9DF16E9F2C35861800A1E56C /* PuffTrackReal.app */,
-				9DF16EAF2C35861900A1E56C /* PuffTrackRealTests.xctest */,
-				9DF16EB92C35861900A1E56C /* PuffTrackRealUITests.xctest */,
+				9DF16E9F2C35861800A1E56C /* PuffTrack.app */,
+				9DF16EAF2C35861900A1E56C /* PuffTrackTests.xctest */,
+				9DF16EB92C35861900A1E56C /* PuffTrackUITests.xctest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -136,7 +138,7 @@
 				9DF16EA42C35861800A1E56C /* ContentView.swift */,
 				9DF16EA62C35861800A1E56C /* Assets.xcassets */,
 				9DF16EA82C35861800A1E56C /* Preview Content */,
-				9DF40D9C2C7E6CA700CCBF46 /* Views.swift */,
+				9DF40D9C2C7E6CA700CCBF46 /* MilestonesView.swift */,
 				9D990AC02C7F4EDF00C58EDD /* DataModels.swift */,
 				9D990AC22C7F4EED00C58EDD /* CalculationEngine.swift */,
 				9D990AC42C7F4F0700C58EDD /* ViewModel.swift */,
@@ -146,6 +148,7 @@
 				9D6E90A52C95E73700DBC81C /* FriendsView.swift */,
 				9D10B15D2CA3177500ABB4E7 /* Syncer.swift */,
 				9DA5AC4F2CA47E4800D374D8 /* OnboardingView.swift */,
+				9DA5AC522CA5F3B200D374D8 /* SettingsView.swift */,
 			);
 			path = PuffTrackReal;
 			sourceTree = "<group>";
@@ -187,9 +190,9 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
-		9DF16E9E2C35861800A1E56C /* PuffTrackReal */ = {
+		9DF16E9E2C35861800A1E56C /* PuffTrack */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 9DF16EC32C35861900A1E56C /* Build configuration list for PBXNativeTarget "PuffTrackReal" */;
+			buildConfigurationList = 9DF16EC32C35861900A1E56C /* Build configuration list for PBXNativeTarget "PuffTrack" */;
 			buildPhases = (
 				09062A7460CD482AD3F202FF /* [CP] Check Pods Manifest.lock */,
 				9DF16E9B2C35861800A1E56C /* Sources */,
@@ -201,14 +204,14 @@
 			);
 			dependencies = (
 			);
-			name = PuffTrackReal;
+			name = PuffTrack;
 			productName = PuffTrackReal;
-			productReference = 9DF16E9F2C35861800A1E56C /* PuffTrackReal.app */;
+			productReference = 9DF16E9F2C35861800A1E56C /* PuffTrack.app */;
 			productType = "com.apple.product-type.application";
 		};
-		9DF16EAE2C35861900A1E56C /* PuffTrackRealTests */ = {
+		9DF16EAE2C35861900A1E56C /* PuffTrackTests */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 9DF16EC62C35861900A1E56C /* Build configuration list for PBXNativeTarget "PuffTrackRealTests" */;
+			buildConfigurationList = 9DF16EC62C35861900A1E56C /* Build configuration list for PBXNativeTarget "PuffTrackTests" */;
 			buildPhases = (
 				9DF16EAB2C35861900A1E56C /* Sources */,
 				9DF16EAC2C35861900A1E56C /* Frameworks */,
@@ -219,14 +222,14 @@
 			dependencies = (
 				9DF16EB12C35861900A1E56C /* PBXTargetDependency */,
 			);
-			name = PuffTrackRealTests;
+			name = PuffTrackTests;
 			productName = PuffTrackRealTests;
-			productReference = 9DF16EAF2C35861900A1E56C /* PuffTrackRealTests.xctest */;
+			productReference = 9DF16EAF2C35861900A1E56C /* PuffTrackTests.xctest */;
 			productType = "com.apple.product-type.bundle.unit-test";
 		};
-		9DF16EB82C35861900A1E56C /* PuffTrackRealUITests */ = {
+		9DF16EB82C35861900A1E56C /* PuffTrackUITests */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 9DF16EC92C35861900A1E56C /* Build configuration list for PBXNativeTarget "PuffTrackRealUITests" */;
+			buildConfigurationList = 9DF16EC92C35861900A1E56C /* Build configuration list for PBXNativeTarget "PuffTrackUITests" */;
 			buildPhases = (
 				9DF16EB52C35861900A1E56C /* Sources */,
 				9DF16EB62C35861900A1E56C /* Frameworks */,
@@ -237,9 +240,9 @@
 			dependencies = (
 				9DF16EBB2C35861900A1E56C /* PBXTargetDependency */,
 			);
-			name = PuffTrackRealUITests;
+			name = PuffTrackUITests;
 			productName = PuffTrackRealUITests;
-			productReference = 9DF16EB92C35861900A1E56C /* PuffTrackRealUITests.xctest */;
+			productReference = 9DF16EB92C35861900A1E56C /* PuffTrackUITests.xctest */;
 			productType = "com.apple.product-type.bundle.ui-testing";
 		};
 /* End PBXNativeTarget section */
@@ -266,7 +269,7 @@
 					};
 				};
 			};
-			buildConfigurationList = 9DF16E9A2C35861800A1E56C /* Build configuration list for PBXProject "PuffTrackReal" */;
+			buildConfigurationList = 9DF16E9A2C35861800A1E56C /* Build configuration list for PBXProject "PuffTrack" */;
 			compatibilityVersion = "Xcode 14.0";
 			developmentRegion = en;
 			hasScannedForEncodings = 0;
@@ -279,9 +282,9 @@
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
-				9DF16E9E2C35861800A1E56C /* PuffTrackReal */,
-				9DF16EAE2C35861900A1E56C /* PuffTrackRealTests */,
-				9DF16EB82C35861900A1E56C /* PuffTrackRealUITests */,
+				9DF16E9E2C35861800A1E56C /* PuffTrack */,
+				9DF16EAE2C35861900A1E56C /* PuffTrackTests */,
+				9DF16EB82C35861900A1E56C /* PuffTrackUITests */,
 			);
 		};
 /* End PBXProject section */
@@ -359,7 +362,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				9DF40D9D2C7E6CA700CCBF46 /* Views.swift in Sources */,
+				9DF40D9D2C7E6CA700CCBF46 /* MilestonesView.swift in Sources */,
 				9D2C14FA2C95C3EA003DCD12 /* SocialsViewModel.swift in Sources */,
 				9DF16EA52C35861800A1E56C /* ContentView.swift in Sources */,
 				9D10B15E2CA3177500ABB4E7 /* Syncer.swift in Sources */,
@@ -368,6 +371,7 @@
 				9DF16EA32C35861800A1E56C /* PuffTrackRealApp.swift in Sources */,
 				9D990AC32C7F4EED00C58EDD /* CalculationEngine.swift in Sources */,
 				9DC18E962C95DEE80081F76A /* AuthView.swift in Sources */,
+				9DA5AC532CA5F3B200D374D8 /* SettingsView.swift in Sources */,
 				9D990AC52C7F4F0700C58EDD /* ViewModel.swift in Sources */,
 				9DA5AC502CA47E4800D374D8 /* OnboardingView.swift in Sources */,
 			);
@@ -395,12 +399,12 @@
 /* Begin PBXTargetDependency section */
 		9DF16EB12C35861900A1E56C /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
-			target = 9DF16E9E2C35861800A1E56C /* PuffTrackReal */;
+			target = 9DF16E9E2C35861800A1E56C /* PuffTrack */;
 			targetProxy = 9DF16EB02C35861900A1E56C /* PBXContainerItemProxy */;
 		};
 		9DF16EBB2C35861900A1E56C /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
-			target = 9DF16E9E2C35861800A1E56C /* PuffTrackReal */;
+			target = 9DF16E9E2C35861800A1E56C /* PuffTrack */;
 			targetProxy = 9DF16EBA2C35861900A1E56C /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
@@ -539,6 +543,8 @@
 				DEVELOPMENT_TEAM = RCGD5DNCWG;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_CFBundleDisplayName = PuffTrack;
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.lifestyle";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
@@ -570,6 +576,8 @@
 				DEVELOPMENT_TEAM = RCGD5DNCWG;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_CFBundleDisplayName = PuffTrack;
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.lifestyle";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
@@ -607,7 +615,7 @@
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
-				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/PuffTrackReal.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/PuffTrackReal";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/PuffTrack.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/PuffTrack";
 			};
 			name = Debug;
 		};
@@ -629,7 +637,7 @@
 				SWIFT_OBJC_BRIDGING_HEADER = "PuffTrackRealTests/PuffTrackRealTests-Bridging-Header.h";
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
-				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/PuffTrackReal.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/PuffTrackReal";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/PuffTrack.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/PuffTrack";
 			};
 			name = Release;
 		};
@@ -672,7 +680,7 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		9DF16E9A2C35861800A1E56C /* Build configuration list for PBXProject "PuffTrackReal" */ = {
+		9DF16E9A2C35861800A1E56C /* Build configuration list for PBXProject "PuffTrack" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				9DF16EC12C35861900A1E56C /* Debug */,
@@ -681,7 +689,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		9DF16EC32C35861900A1E56C /* Build configuration list for PBXNativeTarget "PuffTrackReal" */ = {
+		9DF16EC32C35861900A1E56C /* Build configuration list for PBXNativeTarget "PuffTrack" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				9DF16EC42C35861900A1E56C /* Debug */,
@@ -690,7 +698,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		9DF16EC62C35861900A1E56C /* Build configuration list for PBXNativeTarget "PuffTrackRealTests" */ = {
+		9DF16EC62C35861900A1E56C /* Build configuration list for PBXNativeTarget "PuffTrackTests" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				9DF16EC72C35861900A1E56C /* Debug */,
@@ -699,7 +707,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		9DF16EC92C35861900A1E56C /* Build configuration list for PBXNativeTarget "PuffTrackRealUITests" */ = {
+		9DF16EC92C35861900A1E56C /* Build configuration list for PBXNativeTarget "PuffTrackUITests" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				9DF16ECA2C35861900A1E56C /* Debug */,

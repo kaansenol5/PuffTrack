@@ -342,6 +342,7 @@ class SocialsViewModel: ObservableObject {
         deleteTokenFromKeychain()
         self.token = nil
         socket?.disconnect()
+        self.serverData = nil
     }
     
     // MARK: - Socket Methods
