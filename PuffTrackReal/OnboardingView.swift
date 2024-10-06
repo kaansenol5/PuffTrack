@@ -267,3 +267,7 @@ struct CustomTextField: View {
             .accentColor(.red)
     }
 }
+
+#Preview{
+    OnboardingView(isOnboardingComplete: .constant(false) , viewModel: PuffTrackViewModel())
+}

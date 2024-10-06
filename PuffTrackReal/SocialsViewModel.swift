@@ -23,12 +23,13 @@ class SocialsViewModel: ObservableObject {
     @Published var errorMessage: String = ""
     var lastSyncedPuffs: [String] = []
     @Published var serverData: FullSyncResponse?
-    private let baseURL = "https://api.pufftrack.app"
+    private let baseURL = "http://localhost:3000"
     private var token: String?
     var serverPuffCount: Int = 0
     private let keychainServiceName = "com.kaansenol.PuffTrack" // Replace with your app's bundle identifier
     private let tokenKey = "authToken"
-    
+    @Published var accessedData: [String: Any]?
+
     // MARK: - Initialization
     
     init() {
@@ -42,8 +43,77 @@ class SocialsViewModel: ObservableObject {
     
     // MARK: - Authentication Methods
     
+    func performRequest(endpoint: String, httpMethod: String, body: [String: Any], completion: @escaping (Result<[String: Any], Error>) -> Void) {
+        var request = URLRequest(url: URL(string: endpoint)!)
+        request.httpMethod = httpMethod
+        request.addValue("application/json", forHTTPHeaderField: "Content-Type")
+        request.httpBody = try? JSONSerialization.data(withJSONObject: body)
+        
+        URLSession.shared.dataTask(with: request) { data, response, error in
+            // Handle network errors
+            if let error = error {
+                DispatchQueue.main.async {
+                    print("Network Error: \(error.localizedDescription)")
+                    completion(.failure(error))
+                }
+                return
+            }
+            
+            // Check HTTP status code
+            guard let httpResponse = response as? HTTPURLResponse else {
+                let error = NSError(domain: "InvalidResponse", code: 0, userInfo: [NSLocalizedDescriptionKey: "Invalid response type"])
+                DispatchQueue.main.async {
+                    print("Error: Invalid response type")
+                    completion(.failure(error))
+                }
+                return
+            }
+            
+            // Handle HTTP errors
+            if !(200...299).contains(httpResponse.statusCode) {
+                let errorMessage = String(data: data ?? Data(), encoding: .utf8) ?? "No error message"
+                let error = NSError(domain: "HTTPError", code: httpResponse.statusCode, userInfo: [NSLocalizedDescriptionKey: errorMessage])
+                DispatchQueue.main.async {
+                    print("HTTP Error \(httpResponse.statusCode): \(errorMessage)")
+                    completion(.failure(error))
+                }
+                return
+            }
+            
+            // Ensure data is not nil
+            guard let data = data else {
+                let error = NSError(domain: "NoData", code: 0, userInfo: [NSLocalizedDescriptionKey: "No data received"])
+                DispatchQueue.main.async {
+                    print("Error: No data received")
+                    completion(.failure(error))
+                }
+                return
+            }
+            
+            // Parse JSON response
+            do {
+                if let json = try JSONSerialization.jsonObject(with: data) as? [String: Any] {
+                    DispatchQueue.main.async {
+                        completion(.success(json))
+                    }
+                } else {
+                    let error = NSError(domain: "InvalidFormat", code: 0, userInfo: [NSLocalizedDescriptionKey: "Invalid response format"])
+                    DispatchQueue.main.async {
+                        print("Error: Invalid response format")
+                        completion(.failure(error))
+                    }
+                }
+            } catch {
+                DispatchQueue.main.async {
+                    print("JSON Parsing Error: \(error.localizedDescription)")
+                    completion(.failure(error))
+                }
+            }
+        }.resume()
+    }
+
+    
     func signInWithApple(identityToken: String, userId: String, email: String?, fullName: String?, completion: @escaping (Result<String, Error>) -> Void) {
-        print("APPLEAPPLEAPPLE")
         let endpoint = "\(baseURL)/apple-signin"
         var body: [String: Any] = ["identityToken": identityToken, "userId": userId]
         
@@ -55,83 +125,34 @@ class SocialsViewModel: ObservableObject {
             body["fullName"] = fullName
         }
         
-        var request = URLRequest(url: URL(string: endpoint)!)
-        request.httpMethod = "POST"
-        request.addValue("application/json", forHTTPHeaderField: "Content-Type")
-        request.httpBody = try? JSONSerialization.data(withJSONObject: body)
-        
-        URLSession.shared.dataTask(with: request) { [weak self] data, response, error in
-            // Handle network errors
-            if let error = error {
-                DispatchQueue.main.async {
-                    print("Network Error: \(error.localizedDescription)")
-                    completion(.failure(error))
-                    self?.isErrorDisplayed = true
-                    self?.errorMessage = "Please check your network connection"
-                }
-                return
-            }
-            
-            // Check HTTP status code
-            guard let httpResponse = response as? HTTPURLResponse else {
-                let error = NSError(domain: "InvalidResponse", code: 0, userInfo: [NSLocalizedDescriptionKey: "Invalid response type"])
-                DispatchQueue.main.async {
-                    print("Error: Invalid response type")
-                    completion(.failure(error))
-                    self?.isErrorDisplayed = true
-                    self?.errorMessage = "Unexpected error, please try again later"
-                }
-                return
-            }
-            
-            // Handle HTTP errors
-            if !(200...299).contains(httpResponse.statusCode) {
-                let errorMessage = String(data: data ?? Data(), encoding: .utf8) ?? "No error message"
-                let error = NSError(domain: "HTTPError", code: httpResponse.statusCode, userInfo: [NSLocalizedDescriptionKey: errorMessage])
-                DispatchQueue.main.async {
-                    print("HTTP Error \(httpResponse.statusCode): \(errorMessage)")
-                    self?.isErrorDisplayed = true
-                    self?.errorMessage = errorMessage
-                    completion(.failure(error))
-                }
-                return
-            }
-            
-            guard let data = data else {
-                let error = NSError(domain: "NoData", code: 0, userInfo: [NSLocalizedDescriptionKey: "No data received"])
-                DispatchQueue.main.async{
-                    print("Error: No data received")
-                    completion(.failure(error))
-                    self?.isErrorDisplayed = true
-                    self?.errorMessage = "Unexpected error, please try again later"
-                }
-                return
-            }
-            
-            // Parse JSON response
-            do {
-                if let json = try JSONSerialization.jsonObject(with: data) as? [String: Any],
-                   let token = json["token"] as? String {
+        performRequest(endpoint: endpoint, httpMethod: "POST", body: body) { [weak self] result in
+            switch result {
+            case .success(let json):
+                if let token = json["token"] as? String {
                     DispatchQueue.main.async {
                         self?.token = token
                         self?.saveTokenToKeychain(token)
                         self?.connectSocket()
+                        completion(.success(token))
                     }
-                    completion(.success(token))
                 } else {
-                    let error = NSError(domain: "InvalidFormat", code: 0, userInfo: [NSLocalizedDescriptionKey: "Invalid response format"])
-                    print("Error: Invalid response format")
+                    let error = NSError(domain: "InvalidFormat", code: 0, userInfo: [NSLocalizedDescriptionKey: "Token not found in response"])
+                    DispatchQueue.main.async {
+                        print("Error: Token not found in response")
+                        self?.isErrorDisplayed = true
+                        self?.errorMessage = "Unexpected error, please try again later"
+                        completion(.failure(error))
+                    }
+                }
+            case .failure(let error):
+                DispatchQueue.main.async {
+                    print("Error: \(error.localizedDescription)")
                     self?.isErrorDisplayed = true
-                    self?.errorMessage = "Unexpected error, please try again later"
+                    self?.errorMessage = error.localizedDescription
                     completion(.failure(error))
                 }
-            } catch {
-                print("JSON Parsing Error: \(error.localizedDescription)")
-                self?.isErrorDisplayed = true
-                self?.errorMessage = "Unexpected error, please try again later"
-                completion(.failure(error))
             }
-        }.resume()
+        }
     }
 
     
@@ -139,177 +160,166 @@ class SocialsViewModel: ObservableObject {
         let endpoint = "\(baseURL)/register"
         let body: [String: Any] = ["name": name, "email": email, "password": password]
         
-        var request = URLRequest(url: URL(string: endpoint)!)
-        request.httpMethod = "POST"
-        request.addValue("application/json", forHTTPHeaderField: "Content-Type")
-        request.httpBody = try? JSONSerialization.data(withJSONObject: body)
-        
-        URLSession.shared.dataTask(with: request) { [weak self] data, response, error in
-            // Handle network errors
-            if let error = error {
-                DispatchQueue.main.async {
-                    print("Network Error: \(error.localizedDescription)")
-                    completion(.failure(error))
-                    self?.isErrorDisplayed = true
-                    self?.errorMessage = "Please check your network connection"
-                }
-                return
-            }
-            
-            // Check HTTP status code
-            guard let httpResponse = response as? HTTPURLResponse else {
-                let error = NSError(domain: "InvalidResponse", code: 0, userInfo: [NSLocalizedDescriptionKey: "Invalid response type"])
-                DispatchQueue.main.async {
-                    print("Error: Invalid response type")
-                    completion(.failure(error))
-                    self?.isErrorDisplayed = true
-                    self?.errorMessage = "Unexpected error, please try again later"
-                }
-                
-                return
-            }
-            
-            // Handle HTTP errors
-            if !(200...299).contains(httpResponse.statusCode) {
-                let errorMessage = String(data: data ?? Data(), encoding: .utf8) ?? "No error message"
-                let error = NSError(domain: "HTTPError", code: httpResponse.statusCode, userInfo: [NSLocalizedDescriptionKey: errorMessage])
-                DispatchQueue.main.async {
-                    print("HTTP Error \(httpResponse.statusCode): \(errorMessage)")
-                    self?.isErrorDisplayed = true
-                    self?.errorMessage = errorMessage
-                    completion(.failure(error))
-                }
-                return
-            }
-            
-            guard let data = data else {
-                let error = NSError(domain: "NoData", code: 0, userInfo: [NSLocalizedDescriptionKey: "No data received"])
-                DispatchQueue.main.async{
-                    print("Error: No data received")
-                    completion(.failure(error))
-                    self?.isErrorDisplayed = true
-                    self?.errorMessage = "Unexpected error, please try again later"
-                    
-                }
-                
-                return
-            }
-            
-            // Parse JSON response
-            do {
-                if let json = try JSONSerialization.jsonObject(with: data) as? [String: Any],
-                   let token = json["token"] as? String {
+        performRequest(endpoint: endpoint, httpMethod: "POST", body: body) { [weak self] result in
+            switch result {
+            case .success(let json):
+                if let token = json["token"] as? String {
                     DispatchQueue.main.async {
                         self?.token = token
                         self?.saveTokenToKeychain(token)
                         self?.connectSocket()
+                        completion(.success(token))
                     }
-                    completion(.success(token))
                 } else {
-                    let error = NSError(domain: "InvalidFormat", code: 0, userInfo: [NSLocalizedDescriptionKey: "Invalid response format"])
-                    print("Error: Invalid response format")
+                    let error = NSError(domain: "InvalidFormat", code: 0, userInfo: [NSLocalizedDescriptionKey: "Token not found in response"])
+                    DispatchQueue.main.async {
+                        print("Error: Token not found in response")
+                        self?.isErrorDisplayed = true
+                        self?.errorMessage = "Unexpected error, please try again later"
+                        completion(.failure(error))
+                    }
+                }
+            case .failure(let error):
+                DispatchQueue.main.async {
+                    print("Error: \(error.localizedDescription)")
                     self?.isErrorDisplayed = true
-                    self?.errorMessage = "Unexpected error, please try again later"
-                    
+                    self?.errorMessage = error.localizedDescription
                     completion(.failure(error))
                 }
-            } catch {
-                print("JSON Parsing Error: \(error.localizedDescription)")
-                self?.isErrorDisplayed = true
-                self?.errorMessage = "Unexpected error, please try again later"
-                
-                completion(.failure(error))
             }
-        }.resume()
+        }
     }
-    
+
     func login(email: String, password: String, completion: @escaping (Result<String, Error>) -> Void) {
         let endpoint = "\(baseURL)/login"
         let body: [String: Any] = ["email": email, "password": password]
         
-        var request = URLRequest(url: URL(string: endpoint)!)
-        request.httpMethod = "POST"
-        request.addValue("application/json", forHTTPHeaderField: "Content-Type")
-        request.httpBody = try? JSONSerialization.data(withJSONObject: body)
-        
-        URLSession.shared.dataTask(with: request) { [weak self] data, response, error in
-            // Handle network errors
-            if let error = error {
-                DispatchQueue.main.async {
-                    print("Network Error: \(error.localizedDescription)")
-                    completion(.failure(error))
-                    self?.isErrorDisplayed = true
-                    self?.errorMessage = "Please check your network connection"
-                    
-                }
-                return
-            }
-            
-            // Check HTTP status code
-            guard let httpResponse = response as? HTTPURLResponse else {
-                let error = NSError(domain: "InvalidResponse", code: 0, userInfo: [NSLocalizedDescriptionKey: "Invalid response type"])
-                DispatchQueue.main.async {
-                    print("Error: Invalid response type")
-                    completion(.failure(error))
-                    self?.isErrorDisplayed = true
-                    self?.errorMessage = "Unexpected error, please try again later"
-                    
-                }
-                return
-            }
-            
-            // Handle HTTP errors
-            if !(200...299).contains(httpResponse.statusCode) {
-                let errorMessage = String(data: data ?? Data(), encoding: .utf8) ?? "No error message"
-                let error = NSError(domain: "HTTPError", code: httpResponse.statusCode, userInfo: [NSLocalizedDescriptionKey: errorMessage])
-                DispatchQueue.main.async {
-                    print("HTTP Error \(httpResponse.statusCode): \(errorMessage)")
-                    self?.isErrorDisplayed = true
-                    self?.errorMessage = errorMessage
-                    completion(.failure(error))
-                }
-                return
-            }
-            
-            guard let data = data else {
-                let error = NSError(domain: "NoData", code: 0, userInfo: [NSLocalizedDescriptionKey: "No data received"])
-                DispatchQueue.main.async {
-                    print("Error: No data received")
-                    completion(.failure(error))
-                    self?.isErrorDisplayed = true
-                    self?.errorMessage = "Unexpected error, please try again later"
-                }
-                
-                return
-            }
-            
-            // Parse JSON response
-            do {
-                if let json = try JSONSerialization.jsonObject(with: data) as? [String: Any],
-                   let token = json["token"] as? String {
+        performRequest(endpoint: endpoint, httpMethod: "POST", body: body) { [weak self] result in
+            switch result {
+            case .success(let json):
+                if let token = json["token"] as? String {
                     DispatchQueue.main.async {
                         self?.token = token
                         self?.saveTokenToKeychain(token)
                         self?.connectSocket()
+                        completion(.success(token))
                     }
-                    completion(.success(token))
                 } else {
-                    let error = NSError(domain: "InvalidFormat", code: 0, userInfo: [NSLocalizedDescriptionKey: "Invalid response format"])
-                    print("Error: Invalid response format")
+                    let error = NSError(domain: "InvalidFormat", code: 0, userInfo: [NSLocalizedDescriptionKey: "Token not found in response"])
+                    DispatchQueue.main.async {
+                        print("Error: Token not found in response")
+                        self?.isErrorDisplayed = true
+                        self?.errorMessage = "Unexpected error, please try again later"
+                        completion(.failure(error))
+                    }
+                }
+            case .failure(let error):
+                DispatchQueue.main.async {
+                    print("Error: \(error.localizedDescription)")
                     self?.isErrorDisplayed = true
-                    self?.errorMessage = "Unexpected error, please try again later"
-                    
+                    self?.errorMessage = error.localizedDescription
                     completion(.failure(error))
                 }
-            } catch {
-                print("JSON Parsing Error: \(error.localizedDescription)")
-                self?.isErrorDisplayed = true
-                self?.errorMessage = "Unexpected error, please try again later"
-                
-                completion(.failure(error))
             }
-        }.resume()
+        }
     }
+    
+    
+    func accessData(completion: @escaping (Result<[String: Any], Error>) -> Void) {
+         guard let token = self.token else {
+             let error = NSError(domain: "Authentication", code: 0, userInfo: [NSLocalizedDescriptionKey: "No token available"])
+             completion(.failure(error))
+             return
+         }
+
+         let endpoint = "\(baseURL)/userData"
+         let headers = ["Authorization": "Bearer \(token)"]
+
+         var request = URLRequest(url: URL(string: endpoint)!)
+         request.httpMethod = "GET"
+         headers.forEach { request.addValue($1, forHTTPHeaderField: $0) }
+
+         URLSession.shared.dataTask(with: request) { [weak self] data, response, error in
+             if let error = error {
+                 DispatchQueue.main.async {
+                     completion(.failure(error))
+                 }
+                 return
+             }
+
+             guard let data = data else {
+                 let error = NSError(domain: "NoData", code: 0, userInfo: [NSLocalizedDescriptionKey: "No data received"])
+                 DispatchQueue.main.async {
+                     completion(.failure(error))
+                 }
+                 return
+             }
+
+             do {
+                 if let json = try JSONSerialization.jsonObject(with: data) as? [String: Any] {
+                     DispatchQueue.main.async {
+                         self?.accessedData = json
+                         completion(.success(json))
+                     }
+                 } else {
+                     let error = NSError(domain: "InvalidFormat", code: 0, userInfo: [NSLocalizedDescriptionKey: "Invalid response format"])
+                     DispatchQueue.main.async {
+                         completion(.failure(error))
+                     }
+                 }
+             } catch {
+                 DispatchQueue.main.async {
+                     completion(.failure(error))
+                 }
+             }
+         }.resume()
+     }
+
+     // New function to remove data
+     func removeData(completion: @escaping (Result<Void, Error>) -> Void) {
+         guard let token = self.token else {
+             let error = NSError(domain: "Authentication", code: 0, userInfo: [NSLocalizedDescriptionKey: "No token available"])
+             completion(.failure(error))
+             return
+         }
+
+         let endpoint = "\(baseURL)/deleteUser"
+         let headers = ["Authorization": "Bearer \(token)"]
+
+         var request = URLRequest(url: URL(string: endpoint)!)
+         request.httpMethod = "DELETE"
+         headers.forEach { request.addValue($1, forHTTPHeaderField: $0) }
+
+         URLSession.shared.dataTask(with: request) { data, response, error in
+             if let error = error {
+                 DispatchQueue.main.async {
+                     completion(.failure(error))
+                 }
+                 return
+             }
+
+             guard let httpResponse = response as? HTTPURLResponse else {
+                 let error = NSError(domain: "InvalidResponse", code: 0, userInfo: [NSLocalizedDescriptionKey: "Invalid response type"])
+                 DispatchQueue.main.async {
+                     completion(.failure(error))
+                 }
+                 return
+             }
+
+             if (200...299).contains(httpResponse.statusCode) {
+                 DispatchQueue.main.async {
+                     completion(.success(()))
+                 }
+             } else {
+                 let error = NSError(domain: "HTTPError", code: httpResponse.statusCode, userInfo: [NSLocalizedDescriptionKey: "Failed to remove data"])
+                 DispatchQueue.main.async {
+                     completion(.failure(error))
+                 }
+             }
+         }.resume()
+     }
+
+
     
     // MARK: - Keychain Methods
     

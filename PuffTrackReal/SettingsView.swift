@@ -17,18 +17,30 @@ struct SettingsView: View {
     @State private var vapeCost: String = ""
     @State private var puffsPerVape: String = ""
     @State private var monthlySpending: String = ""
-    @State private var showLogoutAlert = false
+    @State private var activeAlert: ActiveAlert?
+    @State private var showViewDataSheet = false
+    @State private var userData: String = ""
+    enum ActiveAlert: Identifiable {
+        case logout, deleteAccount, deleteAccountConfirmation
+        
+        var id: Int {
+            switch self {
+            case .logout: return 0
+            case .deleteAccount: return 1
+            case .deleteAccountConfirmation: return 2
+            }
+        }
+    }
+    
     
     var body: some View {
         NavigationView {
             Form {
                 accountSection
-                
                 vapeDetailsSection
-                
                 monthlySpendingSection
-                
                 notificationsSection
+                accountManagementSection
             }
             .navigationTitle("Settings")
             .navigationBarItems(trailing: Button("Save") {
@@ -38,17 +50,95 @@ struct SettingsView: View {
         }
         .accentColor(.red)
         .onAppear(perform: loadCurrentSettings)
-        .alert(isPresented: $showLogoutAlert) {
-            Alert(
-                title: Text("Logout"),
-                message: Text("Are you sure you want to logout?"),
-                primaryButton: .destructive(Text("Logout")) {
-                    socialsViewModel.logout()
-                },
-                secondaryButton: .cancel()
-            )
+        .alert(item: $activeAlert) { alertType in
+            switch alertType {
+            case .logout:
+                return Alert(
+                    title: Text("Logout"),
+                    message: Text("Are you sure you want to logout?"),
+                    primaryButton: .destructive(Text("Logout")) {
+                        socialsViewModel.logout()
+                    },
+                    secondaryButton: .cancel()
+                )
+            case .deleteAccount:
+                return Alert(
+                    title: Text("Delete Account"),
+                    message: Text("Are you sure you want to delete your account? This action cannot be undone."),
+                    primaryButton: .destructive(Text("Delete")) {
+                        activeAlert = .deleteAccountConfirmation
+                    },
+                    secondaryButton: .cancel()
+                )
+            case .deleteAccountConfirmation:
+                return Alert(
+                    title: Text("Confirm Delete Account"),
+                    message: Text("This will permanently delete your account and all associated data. Are you absolutely sure?"),
+                    primaryButton: .destructive(Text("Yes, Delete My Account")) {
+                        deleteAccount()
+                    },
+                    secondaryButton: .cancel()
+                )
+            }
+        }
+        .sheet(isPresented: $showViewDataSheet) {
+            ViewDataSheet(userData: userData)
         }
     }
+    
+    private var accountManagementSection: some View {
+        Section(header: Text("Account Management").foregroundColor(.red)) {
+            Button(action: {
+                viewMyData()
+            }) {
+                Text("View My Data")
+                    .foregroundColor(.blue)
+            }
+            
+            Button(action: {
+                print("Delete account button clicked")
+                activeAlert = .deleteAccount
+            }) {
+                Text("Delete My Account")
+                    .foregroundColor(.red)
+            }
+        }
+    }
+    
+
+    
+    private func viewMyData() {
+        socialsViewModel.accessData { result in
+            switch result {
+            case .success(let data):
+                if let jsonData = try? JSONSerialization.data(withJSONObject: data, options: .prettyPrinted),
+                   let jsonString = String(data: jsonData, encoding: .utf8) {
+                    userData = jsonString
+                    showViewDataSheet = true
+                } else {
+                    userData = "Error: Could not parse data"
+                    showViewDataSheet = true
+                }
+            case .failure(let error):
+                userData = "Error: \(error.localizedDescription)"
+                showViewDataSheet = true
+            }
+        }
+    }
+    
+    private func deleteAccount() {
+        socialsViewModel.removeData { result in
+            switch result {
+            case .success:
+                socialsViewModel.logout()
+                presentationMode.wrappedValue.dismiss()
+            case .failure(let error):
+                print("Failed to delete account: \(error.localizedDescription)")
+                // You might want to show an alert here to inform the user
+            }
+        }
+    }
+    
     
     private var accountSection: some View {
         Section(header: Text("Account").foregroundColor(.red)) {
@@ -72,7 +162,7 @@ struct SettingsView: View {
                         .foregroundColor(.gray)
                 }
                 Button(action: {
-                    showLogoutAlert = true
+                    activeAlert = .logout
                 }) {
                     Text("Logout")
                         .foregroundColor(.red)
@@ -83,6 +173,7 @@ struct SettingsView: View {
             }
         }
     }
+
     
     private var vapeDetailsSection: some View {
         Section(header: Text("Vape Details").foregroundColor(.red)) {
@@ -141,5 +232,24 @@ struct SettingsView: View {
             viewModel.updateSettings(vapeCost: cost, puffsPerVape: puffs, monthlySpending: spending)
         }
         presentationMode.wrappedValue.dismiss()
+    }
+}
+
+struct ViewDataSheet: View {
+    let userData: String
+    @Environment(\.presentationMode) var presentationMode
+    
+    var body: some View {
+        NavigationView {
+            ScrollView {
+                Text(userData)
+                    .padding()
+                    .font(.system(.body, design: .monospaced))
+            }
+            .navigationBarTitle("My Data", displayMode: .inline)
+            .navigationBarItems(trailing: Button("Close") {
+                presentationMode.wrappedValue.dismiss()
+            })
+        }
     }
 }
