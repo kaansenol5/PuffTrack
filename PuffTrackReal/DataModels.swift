@@ -17,6 +17,7 @@ struct UserSettings: Codable {
     var vapeCost: Double
     var puffsPerVape: Int
     var monthlySpending: Double
+    var dailyPuffLimit: Int
 }
 
 struct Milestone: Identifiable {
@@ -32,7 +33,7 @@ class PuffTrackData: ObservableObject {
     @Published var settings: UserSettings
     
     init() {
-        self.settings = UserSettings(vapeCost: 10.0, puffsPerVape: 600, monthlySpending: 50.0)
+        self.settings = UserSettings(vapeCost: 10.0, puffsPerVape: 600, monthlySpending: 50.0, dailyPuffLimit: 30)
         loadData()
     }
     

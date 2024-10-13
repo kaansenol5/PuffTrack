@@ -19,13 +19,18 @@ struct OnboardingView: View {
     @State private var vapeCost = ""
     @State private var puffsPerVape = ""
     @State private var monthlySpending = ""
+    @State private var dailyPuffLimit = ""
     @State private var showInputAlert = false
+    
+    // Add this state variable to control keyboard focus
+    @FocusState private var focusedField: Field?
     
     let steps = [
         "Welcome",
         "Track Progress",
         "Social Support",
         "Vaping Habits",
+        "Set Daily Limit",
         "Stay Motivated",
         "Get Started"
     ]
@@ -43,8 +48,9 @@ struct OnboardingView: View {
                         trackProgressView(size: geometry.size).tag(1)
                         socialSupportView(size: geometry.size).tag(2)
                         vapingHabitsView(size: geometry.size).tag(3)
-                        stayMotivatedView(size: geometry.size).tag(4)
-                        getStartedView(size: geometry.size).tag(5)
+                        setDailyLimitView(size: geometry.size, dailyPuffLimit: $dailyPuffLimit, accentColor: Color.red).tag(4)
+                        stayMotivatedView(size: geometry.size).tag(5)
+                        getStartedView(size: geometry.size).tag(6)
                     }
                     .tabViewStyle(PageTabViewStyle(indexDisplayMode: .never))
                     .animation(.easeInOut, value: currentStep)
@@ -86,7 +92,10 @@ struct OnboardingView: View {
     var navigationButtons: some View {
         HStack {
             if currentStep > 0 {
-                Button(action: { withAnimation { currentStep -= 1 } }) {
+                Button(action: {
+                    withAnimation { currentStep -= 1 }
+                    focusedField = nil // Dismiss keyboard when going back
+                }) {
                     Text("Back")
                         .foregroundColor(textColor.opacity(0.7))
                         .padding(.vertical, 10)
@@ -103,6 +112,7 @@ struct OnboardingView: View {
                     completeOnboarding()
                 } else {
                     withAnimation { currentStep += 1 }
+                    focusedField = nil // Dismiss keyboard when going to the next step
                 }
             }) {
                 Text(currentStep == steps.count - 1 ? "Get Started" : "Next")
@@ -118,14 +128,19 @@ struct OnboardingView: View {
     
     func welcomeView(size: CGSize) -> some View {
         VStack(spacing: 30) {
-            Image(systemName: "lungs.fill")
-                .font(.system(size: min(size.width, size.height) * 0.2))
+            Image("pufftracklogo")
+                .resizable() // Makes the image resizable
+                .aspectRatio(contentMode: .fit) // Preserves aspect ratio
+                .frame(width: min(size.width, size.height) * 0.4) // Adjust the size
                 .foregroundColor(accentColor)
+            
             Text("Welcome to PuffTrack")
                 .font(.system(size: 32, weight: .bold))
+            
             Text("Your personal companion on the journey to a healthier, vape-free life.")
                 .font(.title3)
                 .multilineTextAlignment(.center)
+            
             Text("PuffTrack helps you monitor your vaping habits, set goals, and celebrate your progress towards quitting.")
                 .font(.body)
                 .multilineTextAlignment(.center)
@@ -134,7 +149,7 @@ struct OnboardingView: View {
         .padding()
         .foregroundColor(textColor)
     }
-    
+
     func trackProgressView(size: CGSize) -> some View {
         VStack(spacing: 30) {
             Image(systemName: "chart.bar.fill")
@@ -182,18 +197,69 @@ struct OnboardingView: View {
                 .multilineTextAlignment(.center)
                 .padding(.horizontal)
             Group {
-                CustomTextField(placeholder: "Cost per vape ($)", text: $vapeCost, colorScheme: colorScheme)
+                CustomTextField(placeholder: "Cost per vape ($)", text: $vapeCost, colorScheme: colorScheme, focusedField: $focusedField, field: .vapeCost)
                     .keyboardType(.decimalPad)
-                CustomTextField(placeholder: "Puffs per vape", text: $puffsPerVape, colorScheme: colorScheme)
+                CustomTextField(placeholder: "Puffs per vape", text: $puffsPerVape, colorScheme: colorScheme, focusedField: $focusedField, field: .puffsPerVape)
                     .keyboardType(.numberPad)
-                CustomTextField(placeholder: "Monthly vape spending ($)", text: $monthlySpending, colorScheme: colorScheme)
+                CustomTextField(placeholder: "Monthly vape spending ($)", text: $monthlySpending, colorScheme: colorScheme, focusedField: $focusedField, field: .monthlySpending)
                     .keyboardType(.decimalPad)
             }
         }
         .padding()
         .foregroundColor(textColor)
     }
-    
+
+
+    func setDailyLimitView(size: CGSize, dailyPuffLimit: Binding<String>, accentColor: Color) -> some View {
+        let limitValue = Binding<Double>(
+            get: { Double(dailyPuffLimit.wrappedValue) ?? 0 },
+            set: { dailyPuffLimit.wrappedValue = String(Int($0)) }
+        )
+        
+        return VStack(spacing: 20) {
+            Text("Daily Puff Limit")
+                .font(.headline)
+                .foregroundColor(.secondary)
+            
+            ZStack {
+                RoundedRectangle(cornerRadius: 20)
+                    .fill(Color.secondary.opacity(0.1))
+                
+                VStack {
+                    Slider(value: limitValue, in: 0...100, step: 1)
+                        .accentColor(accentColor)
+                        .padding(.horizontal)
+                    
+                    HStack {
+                        Text("0")
+                        Spacer()
+                        Text("\(Int(limitValue.wrappedValue))")
+                            .font(.system(size: 36, weight: .bold))
+                            .foregroundColor(accentColor)
+                        Spacer()
+                        Text("100")
+                    }
+                    .padding(.horizontal)
+                }
+            }
+            .frame(height: size.height * 0.15)
+            
+            Text("Slide to set your daily puff limit")
+                .font(.caption)
+                .foregroundColor(.secondary)
+            
+            HStack {
+                Image(systemName: "info.circle")
+                Text("Challenge yourself to reduce your daily puff count")
+            }
+            .font(.footnote)
+            .foregroundColor(.secondary)
+        }
+        .padding()
+        .background(Color(UIColor.systemBackground))
+        .cornerRadius(15)
+        .shadow(radius: 5)
+    }
     func stayMotivatedView(size: CGSize) -> some View {
         VStack(spacing: 30) {
             Image(systemName: "bell.badge.fill")
@@ -237,14 +303,20 @@ struct OnboardingView: View {
     }
     
     private func areVapingFieldsFilled() -> Bool {
-        return !vapeCost.isEmpty && !puffsPerVape.isEmpty && !monthlySpending.isEmpty
+        let filled = !vapeCost.isEmpty && !puffsPerVape.isEmpty && !monthlySpending.isEmpty
+        if filled {
+            focusedField = nil // Dismiss keyboard when all fields are filled
+        }
+        return filled
     }
     
     private func completeOnboarding() {
         if let cost = Double(vapeCost),
            let puffs = Int(puffsPerVape),
-           let spending = Double(monthlySpending) {
-            viewModel.updateSettings(vapeCost: cost, puffsPerVape: puffs, monthlySpending: spending)
+           let spending = Double(monthlySpending),
+           let limit = Int(dailyPuffLimit) {
+            viewModel.updateSettings(vapeCost: cost, puffsPerVape: puffs, monthlySpending: spending, dailyPuffLimit: limit)
+            
             isOnboardingComplete = true
             UserDefaults.standard.set(true, forKey: "onboardingComplete")
         } else {
@@ -257,6 +329,8 @@ struct CustomTextField: View {
     let placeholder: String
     @Binding var text: String
     let colorScheme: ColorScheme
+    @FocusState.Binding var focusedField: Field?
+    let field: Field
     
     var body: some View {
         TextField(placeholder, text: $text)
@@ -265,9 +339,17 @@ struct CustomTextField: View {
             .cornerRadius(10)
             .foregroundColor(colorScheme == .dark ? .white : .black)
             .accentColor(.red)
+            .focused($focusedField, equals: field)
     }
 }
 
-#Preview{
-    OnboardingView(isOnboardingComplete: .constant(false) , viewModel: PuffTrackViewModel())
+enum Field: Hashable {
+    case vapeCost
+    case puffsPerVape
+    case monthlySpending
+    case dailyPuffLimit
+}
+
+#Preview {
+    OnboardingView(isOnboardingComplete: .constant(false), viewModel: PuffTrackViewModel())
 }

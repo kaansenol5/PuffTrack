@@ -17,9 +17,11 @@ struct SettingsView: View {
     @State private var vapeCost: String = ""
     @State private var puffsPerVape: String = ""
     @State private var monthlySpending: String = ""
+    @State private var dailyPuffLimit: String = "" // New state for daily puff limit
     @State private var activeAlert: ActiveAlert?
     @State private var showViewDataSheet = false
     @State private var userData: String = ""
+    
     enum ActiveAlert: Identifiable {
         case logout, deleteAccount, deleteAccountConfirmation
         
@@ -32,15 +34,17 @@ struct SettingsView: View {
         }
     }
     
-    
     var body: some View {
         NavigationView {
             Form {
                 accountSection
+                if(socialsViewModel.isUserLoggedIn()){
+                    accountManagementSection
+                }
                 vapeDetailsSection
+                dailyPuffLimitSection // Added the daily puff limit section
                 monthlySpendingSection
                 notificationsSection
-                accountManagementSection
             }
             .navigationTitle("Settings")
             .navigationBarItems(trailing: Button("Save") {
@@ -88,24 +92,32 @@ struct SettingsView: View {
     
     private var accountManagementSection: some View {
         Section(header: Text("Account Management").foregroundColor(.red)) {
-            Button(action: {
-                viewMyData()
-            }) {
-                Text("View My Data")
-                    .foregroundColor(.blue)
-            }
-            
-            Button(action: {
-                print("Delete account button clicked")
-                activeAlert = .deleteAccount
-            }) {
-                Text("Delete My Account")
-                    .foregroundColor(.red)
+            if socialsViewModel.isUserLoggedIn(){
+                Button(action: {
+                    activeAlert = .logout
+                }) {
+                    Text("Logout")
+                        .foregroundColor(.red)
+                }
+                Button(action: {
+                    viewMyData()
+                }) {
+                    Text("View My Data")
+                        .foregroundColor(.blue)
+                }
+                
+                Button(action: {
+                    activeAlert = .deleteAccount
+                }) {
+                    Text("Delete My Account")
+                        .foregroundColor(.red)
+                }
+            } else {
+                Text("Not signed in")
+                    .foregroundColor(.gray)
             }
         }
     }
-    
-
     
     private func viewMyData() {
         socialsViewModel.accessData { result in
@@ -134,11 +146,9 @@ struct SettingsView: View {
                 presentationMode.wrappedValue.dismiss()
             case .failure(let error):
                 print("Failed to delete account: \(error.localizedDescription)")
-                // You might want to show an alert here to inform the user
             }
         }
     }
-    
     
     private var accountSection: some View {
         Section(header: Text("Account").foregroundColor(.red)) {
@@ -161,12 +171,6 @@ struct SettingsView: View {
                     Text(socialsViewModel.serverData?.user.id ?? "")
                         .foregroundColor(.gray)
                 }
-                Button(action: {
-                    activeAlert = .logout
-                }) {
-                    Text("Logout")
-                        .foregroundColor(.red)
-                }
             } else {
                 Text("Not signed in")
                     .foregroundColor(.gray)
@@ -174,24 +178,49 @@ struct SettingsView: View {
         }
     }
 
-    
     private var vapeDetailsSection: some View {
         Section(header: Text("Vape Details").foregroundColor(.red)) {
             HStack {
                 Image(systemName: "dollarsign.circle.fill")
                     .foregroundColor(.red)
-                TextField("Cost per vape ($)", text: $vapeCost)
-                    .keyboardType(.decimalPad)
+                VStack(alignment: .leading) {
+                    Text("Cost per vape ($)")
+                        .font(.caption)
+                        .foregroundColor(.secondary)
+                    TextField("0.00", text: $vapeCost)
+                        .keyboardType(.decimalPad)
+                }
             }
             HStack {
-                Image(systemName: "numbersign.circle.fill")
+                Image(systemName: "number.circle.fill")
                     .foregroundColor(.red)
-                TextField("Puffs per vape", text: $puffsPerVape)
-                    .keyboardType(.numberPad)
+                VStack(alignment: .leading) {
+                    Text("Puffs per vape")
+                        .font(.caption)
+                        .foregroundColor(.secondary)
+                    TextField("0", text: $puffsPerVape)
+                        .keyboardType(.numberPad)
+                }
             }
         }
     }
-    
+
+    private var dailyPuffLimitSection: some View { // New section for daily puff limit
+        Section(header: Text("Daily Puff Limit").foregroundColor(.red)) {
+            HStack {
+                Image(systemName: "lungs.fill")
+                    .foregroundColor(.red)
+                VStack(alignment: .leading) {
+                    Text("Daily Puff Limit")
+                        .font(.caption)
+                        .foregroundColor(.secondary)
+                    TextField("0", text: $dailyPuffLimit)
+                        .keyboardType(.numberPad)
+                }
+            }
+        }
+    }
+
     private var monthlySpendingSection: some View {
         Section(header: Text("Monthly Spending").foregroundColor(.red)) {
             HStack {
@@ -223,13 +252,15 @@ struct SettingsView: View {
         vapeCost = String(format: "%.2f", viewModel.settings.vapeCost)
         puffsPerVape = "\(viewModel.settings.puffsPerVape)"
         monthlySpending = String(format: "%.2f", viewModel.settings.monthlySpending)
+        dailyPuffLimit = "\(viewModel.settings.dailyPuffLimit)" // Load daily puff limit
     }
     
     private func saveSettings() {
         if let cost = Double(vapeCost),
            let puffs = Int(puffsPerVape),
-           let spending = Double(monthlySpending) {
-            viewModel.updateSettings(vapeCost: cost, puffsPerVape: puffs, monthlySpending: spending)
+           let spending = Double(monthlySpending),
+           let puffLimit = Int(dailyPuffLimit) { // Save daily puff limit
+            viewModel.updateSettings(vapeCost: cost, puffsPerVape: puffs, monthlySpending: spending, dailyPuffLimit: puffLimit)
         }
         presentationMode.wrappedValue.dismiss()
     }

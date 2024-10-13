@@ -126,13 +126,12 @@ class PuffTrackViewModel: ObservableObject {
         milestones = [
             Milestone(days: 1, title: "24 Hours Free", description: "You've made it through the first day!"),
             Milestone(days: 3, title: "3-Day Challenge", description: "You've overcome the toughest part!"),
-            Milestone(days: 7, title: "One Week Wonder", description: "A full week without vaping!"),
+            Milestone(days: 7, title: "One Week Wonder", description: "A full week vape-free!"),
+            Milestone(days: 14, title: "Fortnight Freedom", description: "Two weeks without vaping!"),
             Milestone(days: 30, title: "Monthly Marvel", description: "30 days of freedom!"),
-            Milestone(days: 90, title: "Quarterly Queen/King", description: "You're on your way to a new life!"),
-            Milestone(days: 365, title: "Year of Triumph", description: "A full year vape-free! Incredible!")
+            Milestone(days: 60, title: "60-Day Milestone", description: "Two months vape-free! You're making incredible progress!")
         ]
     }
-    
     var puffCount: Int {
         let today = Calendar.current.startOfDay(for: Date())
         return CalculationEngine.getPuffCountForDate(today, puffs: model.puffs)
@@ -157,8 +156,8 @@ class PuffTrackViewModel: ObservableObject {
         updateCalculations()
     }
     
-    func updateSettings(vapeCost: Double, puffsPerVape: Int, monthlySpending: Double) {
-        model.settings = UserSettings(vapeCost: vapeCost, puffsPerVape: puffsPerVape, monthlySpending: monthlySpending)
+    func updateSettings(vapeCost: Double, puffsPerVape: Int, monthlySpending: Double, dailyPuffLimit: Int) {
+        model.settings = UserSettings(vapeCost: vapeCost, puffsPerVape: puffsPerVape, monthlySpending: monthlySpending, dailyPuffLimit: dailyPuffLimit)
     }
     
     private func setupBindings() {

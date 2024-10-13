@@ -23,7 +23,7 @@ class SocialsViewModel: ObservableObject {
     @Published var errorMessage: String = ""
     var lastSyncedPuffs: [String] = []
     @Published var serverData: FullSyncResponse?
-    private let baseURL = "http://localhost:3000"
+    private let baseURL = "https://api.pufftrack.app"
     private var token: String?
     var serverPuffCount: Int = 0
     private let keychainServiceName = "com.kaansenol.PuffTrack" // Replace with your app's bundle identifier

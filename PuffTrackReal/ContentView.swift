@@ -9,74 +9,84 @@ import SwiftUI
 struct ContentView: View {
     @StateObject private var viewModel = PuffTrackViewModel()
     @StateObject private var socialsViewModel = SocialsViewModel()
+    @StateObject private var purchaseManager = PurchaseManager.shared
     @State private var syncer: Syncer?
     @State private var isSettingsPresented = false
     @State private var isMilestonesPresented = false
     @State private var isFriendsPresented = false
     @State private var isAuthPresented = false
+    @State private var isPurchaseViewPresented = false
     @Environment(\.colorScheme) var colorScheme
-    @State private var onboardingComplete: Bool = true //UserDefaults.standard.bool(forKey: "onboardingComplete")
-    
-
+    @State private var onboardingComplete: Bool = UserDefaults.standard.bool(forKey: "onboardingComplete")
     
     var body: some View {
-        if((!onboardingComplete)){
-            OnboardingView(isOnboardingComplete: $onboardingComplete, viewModel: viewModel)
-        }
-        else{
-            GeometryReader { geometry in
-                ScrollView {
-                    VStack(spacing: geometry.size.height * 0.03) {
-                        headerSection(screenHeight: geometry.size.height)
-                        puffTracker(size: geometry.size)
-                        withdrawalTrackerSection
-                        statsSection
-                        if geometry.size.height > 647 {
-                            socialSection
+        Group {
+            if !onboardingComplete {
+                OnboardingView(isOnboardingComplete: $onboardingComplete, viewModel: viewModel)
+            } else if !purchaseManager.isSubscribed{
+                PurchaseView()
+            } else {
+                mainContent
+                    .onChange(of: purchaseManager.isSubscribed) { newValue in
+                        if !newValue {
+                            isPurchaseViewPresented = true
                         }
                     }
-                    .padding(.horizontal, geometry.size.width * 0.05)
-                    .padding(.vertical, geometry.size.height * 0.02)
-                }
-                .background(backgroundColor.edgesIgnoringSafeArea(.all))
-            }.alert(isPresented: $socialsViewModel.isErrorDisplayed) {
-                Alert(
-                    title: Text("Alert"),
-                    message: Text(socialsViewModel.errorMessage),
-                    dismissButton: .default(Text("OK")) {
-                        print("OK tapped")
-                        socialsViewModel.isErrorDisplayed = false
-                        socialsViewModel.errorMessage = ""
-                        
-                        
+                    .sheet(isPresented: $isPurchaseViewPresented) {
+                        PurchaseView()
                     }
-                )
             }
-            .onAppear {
-                if syncer == nil {
-                    syncer = Syncer(puffTrackViewModel: viewModel, socialsViewModel: socialsViewModel)
-                }
-            }
-            .sheet(isPresented: $isSettingsPresented) {
-                SettingsView(viewModel: viewModel, socialsViewModel: socialsViewModel, isAuthViewPresented: isAuthPresented)
-            }
-            .sheet(isPresented: $isMilestonesPresented) {
-                MilestonesView(viewModel: viewModel)
-            }
-            .sheet(isPresented: $isAuthPresented) {
-                AuthView(socialsViewModel: socialsViewModel, isPresented: $isAuthPresented)
-            }
-            .sheet(isPresented: $isFriendsPresented) {
-                if socialsViewModel.isUserLoggedIn() {
-                    FriendsView(socialsViewModel: socialsViewModel)
-                } else {
-                    AuthView(socialsViewModel: socialsViewModel, isPresented: $isAuthPresented)
-                }
-            }
-
         }
     }
     
+    var mainContent: some View {
+        GeometryReader { geometry in
+                VStack(spacing: geometry.size.height * 0.03) {
+                    headerSection(screenHeight: geometry.size.height)
+                    puffTracker(size: geometry.size)
+                    withdrawalTrackerSection
+                    statsSection
+                    if geometry.size.height > 647 {
+                        socialSection
+                    }
+                }
+                .padding(.horizontal, geometry.size.width * 0.05)
+                .padding(.vertical, geometry.size.height * 0.02)
+        }
+        .alert(isPresented: $socialsViewModel.isErrorDisplayed) {
+            Alert(
+                title: Text("Alert"),
+                message: Text(socialsViewModel.errorMessage),
+                dismissButton: .default(Text("OK")) {
+                    print("OK tapped")
+                    socialsViewModel.isErrorDisplayed = false
+                    socialsViewModel.errorMessage = ""
+                }
+            )
+        }
+        .onAppear {
+            if syncer == nil {
+                syncer = Syncer(puffTrackViewModel: viewModel, socialsViewModel: socialsViewModel)
+            }
+        }
+        .sheet(isPresented: $isSettingsPresented) {
+            SettingsView(viewModel: viewModel, socialsViewModel: socialsViewModel, isAuthViewPresented: isAuthPresented)
+        }
+        .sheet(isPresented: $isMilestonesPresented) {
+            MilestonesView(viewModel: viewModel)
+        }
+        .sheet(isPresented: $isAuthPresented) {
+            AuthView(socialsViewModel: socialsViewModel, isPresented: $isAuthPresented)
+        }
+        .sheet(isPresented: $isFriendsPresented) {
+            if socialsViewModel.isUserLoggedIn() {
+                FriendsView(socialsViewModel: socialsViewModel)
+            } else {
+                AuthView(socialsViewModel: socialsViewModel, isPresented: $isAuthPresented)
+            }
+        }
+    }
+
     private func headerSection(screenHeight: CGFloat) -> some View {
         ZStack {
             HStack {
@@ -126,11 +136,12 @@ struct ContentView: View {
                     .rotationEffect(.degrees(180))
                 
                 Circle()
-                    .trim(from: 0, to: min(CGFloat(viewModel.puffCount) / 100, 0.5))
+                    .trim(from: 0, to: min(CGFloat(viewModel.puffCount) / CGFloat(viewModel.model.settings.dailyPuffLimit) * 0.5, 0.5))
                     .stroke(Color.red, lineWidth: 20)
                     .frame(width: min(size.width * 0.5, size.height * 0.3), height: min(size.width * 0.5, size.height * 0.3))
                     .rotationEffect(.degrees(180))
                     .animation(.spring(), value: viewModel.puffCount)
+
                 
                 VStack {
                     Text("\(viewModel.puffCount)")
