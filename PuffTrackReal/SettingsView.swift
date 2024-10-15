@@ -99,13 +99,13 @@ struct SettingsView: View {
                     Text("Logout")
                         .foregroundColor(.red)
                 }
-                Button(action: {
+              /*  Button(action: {
                     viewMyData()
                 }) {
                     Text("View My Data")
                         .foregroundColor(.blue)
                 }
-                
+                */
                 Button(action: {
                     activeAlert = .deleteAccount
                 }) {
