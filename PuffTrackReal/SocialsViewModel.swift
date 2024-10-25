@@ -23,7 +23,7 @@ class SocialsViewModel: ObservableObject {
     @Published var errorMessage: String = ""
     var lastSyncedPuffs: [String] = []
     @Published var serverData: FullSyncResponse?
-    private let baseURL = "https://api.pufftrack.app"
+    private let baseURL = "http://192.168.1.7:3000"
     private var token: String?
     var serverPuffCount: Int = 0
     private let keychainServiceName = "com.kaansenol.PuffTrack" // Replace with your app's bundle identifier
@@ -319,7 +319,69 @@ class SocialsViewModel: ObservableObject {
          }.resume()
      }
 
-
+    func removeAllPuffs(completion: @escaping (Result<Int, Error>) -> Void) {
+        guard let token = self.token else {
+            let error = NSError(domain: "Authentication", code: 0, userInfo: [NSLocalizedDescriptionKey: "No token available"])
+            completion(.failure(error))
+            return
+        }
+        
+        let endpoint = "\(baseURL)/puffs"
+        var request = URLRequest(url: URL(string: endpoint)!)
+        request.httpMethod = "DELETE"
+        request.addValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
+        
+        URLSession.shared.dataTask(with: request) { [weak self] data, response, error in
+            // Handle network errors
+            if let error = error {
+                DispatchQueue.main.async {
+                    self?.isErrorDisplayed = true
+                    self?.errorMessage = "Network Error: \(error.localizedDescription)"
+                    completion(.failure(error))
+                }
+                return
+            }
+            
+            // Check HTTP status code
+            guard let httpResponse = response as? HTTPURLResponse else {
+                let error = NSError(domain: "InvalidResponse", code: 0, userInfo: [NSLocalizedDescriptionKey: "Invalid response type"])
+                DispatchQueue.main.async {
+                    self?.isErrorDisplayed = true
+                    self?.errorMessage = "Invalid response from server"
+                    completion(.failure(error))
+                }
+                return
+            }
+            
+            // Handle HTTP errors
+            if !(200...299).contains(httpResponse.statusCode) {
+                let errorMessage = String(data: data ?? Data(), encoding: .utf8) ?? "Unknown error"
+                let error = NSError(domain: "HTTPError", code: httpResponse.statusCode, userInfo: [NSLocalizedDescriptionKey: errorMessage])
+                DispatchQueue.main.async {
+                    self?.isErrorDisplayed = true
+                    self?.errorMessage = "Failed to delete puffs: \(errorMessage)"
+                    completion(.failure(error))
+                }
+                return
+            }
+            
+            // Parse response
+            if let data = data,
+               let json = try? JSONSerialization.jsonObject(with: data) as? [String: Any],
+               let count = json["count"] as? Int {
+                DispatchQueue.main.async {
+                    completion(.success(count))
+                }
+            } else {
+                let error = NSError(domain: "ParseError", code: 0, userInfo: [NSLocalizedDescriptionKey: "Failed to parse server response"])
+                DispatchQueue.main.async {
+                    self?.isErrorDisplayed = true
+                    self?.errorMessage = "Failed to parse server response"
+                    completion(.failure(error))
+                }
+            }
+        }.resume()
+    }
     
     // MARK: - Keychain Methods
     

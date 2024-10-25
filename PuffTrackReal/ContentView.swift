@@ -16,6 +16,8 @@ struct ContentView: View {
     @State private var isFriendsPresented = false
     @State private var isAuthPresented = false
     @State private var isPurchaseViewPresented = false
+    @State private var isStatisticsViewPresented = false
+    @State private var isWithdrawalTrackerPresented = false
     @Environment(\.colorScheme) var colorScheme
     @State private var onboardingComplete: Bool = UserDefaults.standard.bool(forKey: "onboardingComplete")
     
@@ -23,7 +25,7 @@ struct ContentView: View {
         Group {
             if !onboardingComplete {
                 OnboardingView(isOnboardingComplete: $onboardingComplete, viewModel: viewModel)
-            } else if !purchaseManager.isSubscribed{
+            } else if !PurchaseManager.shared.isSubscribed{
                 PurchaseView()
             } else {
                 mainContent
@@ -72,6 +74,12 @@ struct ContentView: View {
         .sheet(isPresented: $isSettingsPresented) {
             SettingsView(viewModel: viewModel, socialsViewModel: socialsViewModel, isAuthViewPresented: isAuthPresented)
         }
+        .sheet(isPresented: $isStatisticsViewPresented) {
+            StatisticsView(viewModel: viewModel)
+        }
+        .sheet(isPresented: $isWithdrawalTrackerPresented) {
+            WithdrawalTrackerView(viewModel: viewModel)
+        }
         .sheet(isPresented: $isMilestonesPresented) {
             MilestonesView(viewModel: viewModel)
         }
@@ -99,7 +107,6 @@ struct ContentView: View {
                 Spacer()
                 
                 if screenHeight <= 647 {
-                    // Small screen: Make the friends button a system icon
                     Button(action: {
                         if socialsViewModel.isUserLoggedIn() {
                             isFriendsPresented.toggle()
@@ -113,7 +120,6 @@ struct ContentView: View {
                             .frame(width: 24, height: 24)
                     }
                 } else {
-                    // Larger screens: Show the red dot as is
                     Circle()
                         .fill(Color.red)
                         .frame(width: 10, height: 10)
@@ -180,35 +186,39 @@ struct ContentView: View {
     }
 
     private var withdrawalTrackerSection: some View {
-        VStack(alignment: .leading, spacing: 10) {
-            Text("Withdrawal Tracker")
-                .font(.headline)
-                .foregroundColor(.secondary)
-            
-            HStack {
-                Image(systemName: "waveform.path.ecg")
-                    .foregroundColor(.red)
-                    .font(.system(size: 24))
+        Button(action: { isWithdrawalTrackerPresented.toggle() }) {
+            VStack(alignment: .leading, spacing: 10) {
+                Text("Withdrawal Tracker")
+                    .font(.headline)
+                    .foregroundColor(.secondary)
                 
-                Text(viewModel.withdrawalStatus)
-                    .font(.system(size: 18, weight: .medium, design: .rounded))
-                    .foregroundColor(.primary)
+                HStack {
+                    Image(systemName: "waveform.path.ecg")
+                        .foregroundColor(.red)
+                        .font(.system(size: 24))
+                    
+                    Text(viewModel.withdrawalStatus)
+                        .font(.system(size: 18, weight: .medium, design: .rounded))
+                        .foregroundColor(.primary)
+                        .multilineTextAlignment(.leading)
+                    
+                    Spacer()
+                    
+                    Text(timeElapsed)
+                        .font(.subheadline)
+                        .foregroundColor(.secondary)
+                }
                 
-                Spacer()
-                
-                Text(timeElapsed)
+                Text(viewModel.withdrawalDescription)
                     .font(.subheadline)
                     .foregroundColor(.secondary)
+                    .multilineTextAlignment(.leading)
+                    .padding(.top, 5)
             }
-            
-            Text(viewModel.withdrawalDescription)
-                .font(.subheadline)
-                .foregroundColor(.secondary)
-                .padding(.top, 5)
+            .padding()
+            .background(Color.secondary.opacity(0.1))
+            .cornerRadius(15)
         }
-        .padding()
-        .background(Color.secondary.opacity(0.1))
-        .cornerRadius(15)
     }
     
     private var timeElapsed: String {
@@ -233,7 +243,7 @@ struct ContentView: View {
                 HStack(spacing: 15) {
                     StatCard(value: "\(viewModel.streak) days", icon: "flame.fill", color: .orange, action: { isMilestonesPresented.toggle() })
                         .frame(width: geometry.size.width / 2 - 7.5)
-                    StatCard(value: "$\(String(format: "%.0f", viewModel.moneySaved))", icon: "dollarsign.circle.fill", color: .green, action: {})
+                    StatCard(value: "$\(String(format: "%.0f", viewModel.moneySaved))", icon: "dollarsign.circle.fill", color: .green, action: {isStatisticsViewPresented.toggle()})
                         .frame(width: geometry.size.width / 2 - 7.5)
                 }
             }

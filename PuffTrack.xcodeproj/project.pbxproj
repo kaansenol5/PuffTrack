@@ -9,6 +9,8 @@
 /* Begin PBXBuildFile section */
 		1FAFF658064294BE44D4AED9 /* Pods_PuffTrackReal.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A3CDB7A64601B9AADB206D2E /* Pods_PuffTrackReal.framework */; };
 		9D10B15E2CA3177500ABB4E7 /* Syncer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9D10B15D2CA3177500ABB4E7 /* Syncer.swift */; };
+		9D1989592CCBBFB1008E7204 /* StatisticsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9D1989582CCBBFB1008E7204 /* StatisticsView.swift */; };
+		9D19895B2CCBC310008E7204 /* WithdrawalTrackerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9D19895A2CCBC310008E7204 /* WithdrawalTrackerView.swift */; };
 		9D2C14FA2C95C3EA003DCD12 /* SocialsViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9D2C14F92C95C3EA003DCD12 /* SocialsViewModel.swift */; };
 		9D6E90A22C95E13000DBC81C /* PuffTrackRealTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9D6E90A12C95E13000DBC81C /* PuffTrackRealTests.swift */; };
 		9D6E90A62C95E73700DBC81C /* FriendsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9D6E90A52C95E73700DBC81C /* FriendsView.swift */; };
@@ -49,6 +51,8 @@
 
 /* Begin PBXFileReference section */
 		9D10B15D2CA3177500ABB4E7 /* Syncer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Syncer.swift; sourceTree = "<group>"; };
+		9D1989582CCBBFB1008E7204 /* StatisticsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StatisticsView.swift; sourceTree = "<group>"; };
+		9D19895A2CCBC310008E7204 /* WithdrawalTrackerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WithdrawalTrackerView.swift; sourceTree = "<group>"; };
 		9D2C14F92C95C3EA003DCD12 /* SocialsViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SocialsViewModel.swift; sourceTree = "<group>"; };
 		9D2D91712C7F726C00D45238 /* TODOS.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = TODOS.md; sourceTree = "<group>"; };
 		9D6E90A02C95E13000DBC81C /* PuffTrackRealTests-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "PuffTrackRealTests-Bridging-Header.h"; sourceTree = "<group>"; };
@@ -158,6 +162,8 @@
 				9DA5AC522CA5F3B200D374D8 /* SettingsView.swift */,
 				9DFD2EBC2CB322B000A9458C /* PurchaseManager.swift */,
 				9DFD2EBE2CB322C300A9458C /* PurchaseView.swift */,
+				9D1989582CCBBFB1008E7204 /* StatisticsView.swift */,
+				9D19895A2CCBC310008E7204 /* WithdrawalTrackerView.swift */,
 			);
 			path = PuffTrackReal;
 			sourceTree = "<group>";
@@ -373,8 +379,10 @@
 			buildActionMask = 2147483647;
 			files = (
 				9DF40D9D2C7E6CA700CCBF46 /* MilestonesView.swift in Sources */,
+				9D1989592CCBBFB1008E7204 /* StatisticsView.swift in Sources */,
 				9D2C14FA2C95C3EA003DCD12 /* SocialsViewModel.swift in Sources */,
 				9DFD2EBD2CB322B000A9458C /* PurchaseManager.swift in Sources */,
+				9D19895B2CCBC310008E7204 /* WithdrawalTrackerView.swift in Sources */,
 				9DF16EA52C35861800A1E56C /* ContentView.swift in Sources */,
 				9D10B15E2CA3177500ABB4E7 /* Syncer.swift in Sources */,
 				9D6E90A62C95E73700DBC81C /* FriendsView.swift in Sources */,
