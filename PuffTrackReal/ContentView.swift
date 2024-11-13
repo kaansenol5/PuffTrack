@@ -17,6 +17,7 @@ struct ContentView: View {
     @State private var isAuthPresented = false
     @State private var isPurchaseViewPresented = false
     @State private var isStatisticsViewPresented = false
+    @State private var isGraphViewPresented = false
     @State private var isWithdrawalTrackerPresented = false
     @Environment(\.colorScheme) var colorScheme
     @State private var onboardingComplete: Bool = UserDefaults.standard.bool(forKey: "onboardingComplete")
@@ -25,9 +26,10 @@ struct ContentView: View {
         Group {
             if !onboardingComplete {
                 OnboardingView(isOnboardingComplete: $onboardingComplete, viewModel: viewModel)
-            } else if !PurchaseManager.shared.isSubscribed{
+            } else if !purchaseManager.isSubscribed {
                 PurchaseView()
             } else {
+                
                 mainContent
                     .onChange(of: purchaseManager.isSubscribed) { newValue in
                         if !newValue {
@@ -86,6 +88,9 @@ struct ContentView: View {
         .sheet(isPresented: $isAuthPresented) {
             AuthView(socialsViewModel: socialsViewModel, isPresented: $isAuthPresented)
         }
+        .sheet(isPresented: $isGraphViewPresented){
+            GraphView(viewModel: viewModel)
+        }
         .sheet(isPresented: $isFriendsPresented) {
             if socialsViewModel.isUserLoggedIn() {
                 FriendsView(socialsViewModel: socialsViewModel)
@@ -133,47 +138,58 @@ struct ContentView: View {
     }
 
     private func puffTracker(size: CGSize) -> some View {
-        VStack(spacing: size.height * 0.02) {
-            ZStack {
-                Circle()
-                    .trim(from: 0, to: 0.5)
-                    .stroke(Color.gray.opacity(0.3), lineWidth: 20)
-                    .frame(width: min(size.width * 0.5, size.height * 0.3), height: min(size.width * 0.5, size.height * 0.3))
-                    .rotationEffect(.degrees(180))
-                
-                Circle()
-                    .trim(from: 0, to: min(CGFloat(viewModel.puffCount) / CGFloat(viewModel.model.settings.dailyPuffLimit) * 0.5, 0.5))
-                    .stroke(Color.red, lineWidth: 20)
-                    .frame(width: min(size.width * 0.5, size.height * 0.3), height: min(size.width * 0.5, size.height * 0.3))
-                    .rotationEffect(.degrees(180))
-                    .animation(.spring(), value: viewModel.puffCount)
+            VStack(spacing: size.height * 0.02) {
+                ZStack {
+                    Circle()
+                        .trim(from: 0, to: 0.5)
+                        .stroke(Color.gray.opacity(0.3), lineWidth: 20)
+                        .frame(width: min(size.width * 0.5, size.height * 0.3), height: min(size.width * 0.5, size.height * 0.3))
+                        .rotationEffect(.degrees(180))
+                    
+                    Circle()
+                        .trim(from: 0, to: min(CGFloat(viewModel.puffCount) / CGFloat(viewModel.model.settings.dailyPuffLimit) * 0.5, 0.5))
+                        .stroke(Color.red, lineWidth: 20)
+                        .frame(width: min(size.width * 0.5, size.height * 0.3), height: min(size.width * 0.5, size.height * 0.3))
+                        .rotationEffect(.degrees(180))
+                        .animation(.spring(), value: viewModel.puffCount)
 
-                
-                VStack {
-                    Text("\(viewModel.puffCount)")
-                        .font(.system(size: min(size.width * 0.12, size.height * 0.07), weight: .bold, design: .rounded))
-                        .foregroundColor(textColor)
-                    Text("PUFFS")
-                        .font(.caption)
-                        .foregroundColor(.gray)
-                    Text("Vape lasts \(String(format: "%.1f", viewModel.vapeDuration)) days")
-                        .font(.caption)
-                        .foregroundColor(.gray)
-                    Text(hoursSinceLastPuffText)
-                        .font(.caption)
-                        .foregroundColor(.gray)
+                    VStack {
+                        Text("\(viewModel.puffCount)")
+                            .font(.system(size: min(size.width * 0.12, size.height * 0.07), weight: .bold, design: .rounded))
+                            .foregroundColor(textColor)
+                        Text("PUFFS")
+                            .font(.caption)
+                            .foregroundColor(.gray)
+                        Text("Vape lasts \(String(format: "%.1f", viewModel.vapeDuration)) days")
+                            .font(.caption)
+                            .foregroundColor(.gray)
+                        Text(hoursSinceLastPuffText)
+                            .font(.caption)
+                            .foregroundColor(.gray)
+                    }
+                    .transition(.scale.combined(with: .opacity))
                 }
-                .transition(.scale.combined(with: .opacity))
+                
+                HStack(spacing: 15) {
+                    PuffButton(action: {
+                        viewModel.addPuff(socialsViewModel: socialsViewModel)
+                        syncer?.syncUnsynedPuffs()
+                    })
+                    .frame(width: min(size.width * 0.45, 200))
+                    
+                    Button(action: { isGraphViewPresented.toggle() }) {
+                        Image(systemName: "chart.xyaxis.line")
+                            .font(.system(size: 20, weight: .bold))
+                            .foregroundColor(.red)
+                            .frame(width: 50, height: 50)
+                            .background(colorScheme == .dark ? Color.black : Color.white)
+                            .cornerRadius(10)
+                            .shadow(color: Color.black.opacity(0.1), radius: 5, x: 0, y: 3)
+                    }
+                }
+                .frame(width: min(size.width * 0.6, 280))
             }
-            
-            PuffButton(action: {
-                viewModel.addPuff(socialsViewModel: socialsViewModel)
-                syncer?.syncUnsynedPuffs()
-            })
-            .frame(width: min(size.width * 0.6, 250))
         }
-    }
-
     private var hoursSinceLastPuffText: String {
         let hours = viewModel.hoursSinceLastPuff
         if hours < 1 {
@@ -368,7 +384,8 @@ struct StatCard: View {
         }
     }
 }
-
 #Preview {
-    ContentView()
+        ContentView()
+            .preferredColorScheme(.dark)
+    
 }

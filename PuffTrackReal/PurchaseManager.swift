@@ -99,6 +99,7 @@ class PurchaseManager: ObservableObject {
             }
             
             isSubscribed = hasActiveSubscription
+            print("subs: \(isSubscribed)" )
         } catch {
             print("Failed to update subscription status: \(error)")
             isSubscribed = false

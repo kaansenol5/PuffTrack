@@ -4,8 +4,6 @@
 //
 //  Created by Kaan Şenol on 26.09.2024.
 //
-
-import Foundation
 import SwiftUI
 
 struct SettingsView: View {
@@ -21,6 +19,9 @@ struct SettingsView: View {
     @State private var activeAlert: ActiveAlert?
     @State private var showViewDataSheet = false
     @State private var userData: String = ""
+    @State private var isEditingName = false
+    @State private var newName = ""
+    @State private var isUpdatingName = false
     
     enum ActiveAlert: Identifiable {
         case logout, deleteAccount, deleteAccountConfirmation, resetData, resetDataConfirmation, resetDataSuccess
@@ -49,6 +50,7 @@ struct SettingsView: View {
                 monthlySpendingSection
                 notificationsSection
                 resetDataSection
+                legalSection
             }
             .navigationTitle("Settings")
             .navigationBarItems(trailing: Button("Save") {
@@ -118,7 +120,29 @@ struct SettingsView: View {
         }
     }
     
-    private var accountManagementSection: some View {
+    private var legalSection: some View {
+        Section(header: Text("Legal").foregroundColor(.red)) {
+            if let url = URL(string: "https://www.pufftrack.app/privacy-policy") {
+                Link(destination: url) {
+                    HStack {
+                        Image(systemName: "doc.text.fill")
+                            .foregroundColor(.red)
+                        Text("Privacy Policy")
+                    }
+                }
+            }
+            if let url = URL(string: "https://www.apple.com/legal/internet-services/itunes/dev/stdeula/") {
+                Link(destination: url) {
+                    HStack {
+                        Image(systemName: "doc.text.fill")
+                            .foregroundColor(.red)
+                        Text("Terms of Service")
+                    }
+                }
+            }
+        }
+    }
+        private var accountManagementSection: some View {
         Section(header: Text("Account Management").foregroundColor(.red)) {
             if socialsViewModel.isUserLoggedIn(){
                 Button(action: {
@@ -177,18 +201,50 @@ struct SettingsView: View {
     private var accountSection: some View {
         Section(header: Text("Account").foregroundColor(.red)) {
             if socialsViewModel.isUserLoggedIn() {
-                HStack {
-                    Text("Name")
-                    Spacer()
-                    Text(socialsViewModel.serverData?.user.name ?? "")
-                        .foregroundColor(.gray)
+                if isEditingName {
+                    HStack {
+                        TextField("Name", text: $newName)
+                        
+                        if isUpdatingName {
+                            ProgressView()
+                                .padding(.horizontal, 4)
+                        } else {
+                            Button("Save") {
+                                updateName()
+                            }
+                            .disabled(newName.isEmpty || newName == socialsViewModel.serverData?.user.name)
+                            .foregroundColor(.red)
+                            
+                            Button("Cancel") {
+                                isEditingName = false
+                                newName = socialsViewModel.serverData?.user.name ?? ""
+                            }
+                            .foregroundColor(.gray)
+                        }
+                    }
+                } else {
+                    HStack {
+                        Text("Name")
+                        Spacer()
+                        Text(socialsViewModel.serverData?.user.name ?? "")
+                            .foregroundColor(.gray)
+                        Button(action: {
+                            newName = socialsViewModel.serverData?.user.name ?? ""
+                            isEditingName = true
+                        }) {
+                            Image(systemName: "pencil")
+                                .foregroundColor(.red)
+                        }
+                    }
                 }
+                
                 HStack {
                     Text("Email")
                     Spacer()
                     Text(socialsViewModel.serverData?.user.email ?? "")
                         .foregroundColor(.gray)
                 }
+                
                 HStack {
                     Text("User ID")
                     Spacer()
@@ -198,6 +254,24 @@ struct SettingsView: View {
             } else {
                 Text("Not signed in")
                     .foregroundColor(.gray)
+            }
+        }
+    }
+
+    private func updateName() {
+        guard !newName.isEmpty else { return }
+        isUpdatingName = true
+        
+        socialsViewModel.changeName(newName: newName) { result in
+            DispatchQueue.main.async {
+                isUpdatingName = false
+                switch result {
+                case .success:
+                    isEditingName = false
+                case .failure:
+                    // Error is already handled by socialsViewModel's error display
+                    newName = socialsViewModel.serverData?.user.name ?? ""
+                }
             }
         }
     }

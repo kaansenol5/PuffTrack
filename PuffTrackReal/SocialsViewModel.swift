@@ -23,7 +23,7 @@ class SocialsViewModel: ObservableObject {
     @Published var errorMessage: String = ""
     var lastSyncedPuffs: [String] = []
     @Published var serverData: FullSyncResponse?
-    private let baseURL = "http://192.168.1.7:3000"
+    private let baseURL = "https://api.pufftrack.app"
     private var token: String?
     var serverPuffCount: Int = 0
     private let keychainServiceName = "com.kaansenol.PuffTrack" // Replace with your app's bundle identifier
@@ -224,6 +224,55 @@ class SocialsViewModel: ObservableObject {
         }
     }
     
+    func changeName(newName: String, completion: @escaping (Result<Void, Error>) -> Void) {
+        guard let token = self.token else {
+            let error = NSError(domain: "Authentication", code: 0, userInfo: [NSLocalizedDescriptionKey: "No token available"])
+            completion(.failure(error))
+            return
+        }
+        
+        let endpoint = "\(baseURL)/user/name"
+        var request = URLRequest(url: URL(string: endpoint)!)
+        request.httpMethod = "PATCH"
+        request.addValue("application/json", forHTTPHeaderField: "Content-Type")
+        request.addValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
+        
+        let body = ["newName": newName]
+        request.httpBody = try? JSONSerialization.data(withJSONObject: body)
+        
+        URLSession.shared.dataTask(with: request) { [weak self] data, response, error in
+            DispatchQueue.main.async {
+                if let error = error {
+                    self?.isErrorDisplayed = true
+                    self?.errorMessage = error.localizedDescription
+                    completion(.failure(error))
+                    return
+                }
+                
+                guard let httpResponse = response as? HTTPURLResponse else {
+                    let error = NSError(domain: "InvalidResponse", code: 0, userInfo: [NSLocalizedDescriptionKey: "Invalid response type"])
+                    self?.isErrorDisplayed = true
+                    self?.errorMessage = "Invalid response from server"
+                    completion(.failure(error))
+                    return
+                }
+                
+                if (200...299).contains(httpResponse.statusCode) {
+                    // Update the local user data
+                    if let userData = self?.serverData?.user {
+                        self?.serverData?.user = User(id: userData.id, name: newName, email: userData.email)
+                    }
+                    completion(.success(()))
+                } else {
+                    let errorMessage = String(data: data ?? Data(), encoding: .utf8) ?? "Unknown error occurred"
+                    let error = NSError(domain: "HTTPError", code: httpResponse.statusCode, userInfo: [NSLocalizedDescriptionKey: errorMessage])
+                    self?.isErrorDisplayed = true
+                    self?.errorMessage = errorMessage
+                    completion(.failure(error))
+                }
+            }
+        }.resume()
+    }
     
     func accessData(completion: @escaping (Result<[String: Any], Error>) -> Void) {
          guard let token = self.token else {
@@ -565,7 +614,7 @@ class SocialsViewModel: ObservableObject {
 }
 
 struct FullSyncResponse: Codable {
-    let user: User
+    var user: User
     let friends: [Friend]
     let sentFriendRequests: [FriendRequest]
     let receivedFriendRequests: [FriendRequest]

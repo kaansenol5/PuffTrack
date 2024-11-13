@@ -81,7 +81,7 @@ struct StatisticsView: View {
                 gradient: [Color.pink, Color.red]
             ),
             StatMetric(
-                title: "Lifetime Puffs",
+                title: "Total Puffs in 30 Days",
                 value: "\(lifetimePuffs)",
                 icon: "number.circle.fill",
                 color: .gray,
