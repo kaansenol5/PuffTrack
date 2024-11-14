@@ -14,6 +14,7 @@
 		9D2C14FA2C95C3EA003DCD12 /* SocialsViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9D2C14F92C95C3EA003DCD12 /* SocialsViewModel.swift */; };
 		9D6E90A22C95E13000DBC81C /* PuffTrackRealTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9D6E90A12C95E13000DBC81C /* PuffTrackRealTests.swift */; };
 		9D6E90A62C95E73700DBC81C /* FriendsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9D6E90A52C95E73700DBC81C /* FriendsView.swift */; };
+		9D90D65A2CCCF57A002040E3 /* GraphView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9D90D6592CCCF57A002040E3 /* GraphView.swift */; };
 		9D990AC12C7F4EDF00C58EDD /* DataModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9D990AC02C7F4EDF00C58EDD /* DataModels.swift */; };
 		9D990AC32C7F4EED00C58EDD /* CalculationEngine.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9D990AC22C7F4EED00C58EDD /* CalculationEngine.swift */; };
 		9D990AC52C7F4F0700C58EDD /* ViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9D990AC42C7F4F0700C58EDD /* ViewModel.swift */; };
@@ -58,6 +59,7 @@
 		9D6E90A02C95E13000DBC81C /* PuffTrackRealTests-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "PuffTrackRealTests-Bridging-Header.h"; sourceTree = "<group>"; };
 		9D6E90A12C95E13000DBC81C /* PuffTrackRealTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PuffTrackRealTests.swift; sourceTree = "<group>"; };
 		9D6E90A52C95E73700DBC81C /* FriendsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FriendsView.swift; sourceTree = "<group>"; };
+		9D90D6592CCCF57A002040E3 /* GraphView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GraphView.swift; sourceTree = "<group>"; };
 		9D990AC02C7F4EDF00C58EDD /* DataModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DataModels.swift; sourceTree = "<group>"; };
 		9D990AC22C7F4EED00C58EDD /* CalculationEngine.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CalculationEngine.swift; sourceTree = "<group>"; };
 		9D990AC42C7F4F0700C58EDD /* ViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewModel.swift; sourceTree = "<group>"; };
@@ -164,6 +166,7 @@
 				9DFD2EBE2CB322C300A9458C /* PurchaseView.swift */,
 				9D1989582CCBBFB1008E7204 /* StatisticsView.swift */,
 				9D19895A2CCBC310008E7204 /* WithdrawalTrackerView.swift */,
+				9D90D6592CCCF57A002040E3 /* GraphView.swift */,
 			);
 			path = PuffTrackReal;
 			sourceTree = "<group>";
@@ -391,6 +394,7 @@
 				9DF16EA32C35861800A1E56C /* PuffTrackRealApp.swift in Sources */,
 				9D990AC32C7F4EED00C58EDD /* CalculationEngine.swift in Sources */,
 				9DC18E962C95DEE80081F76A /* AuthView.swift in Sources */,
+				9D90D65A2CCCF57A002040E3 /* GraphView.swift in Sources */,
 				9DA5AC532CA5F3B200D374D8 /* SettingsView.swift in Sources */,
 				9D990AC52C7F4F0700C58EDD /* ViewModel.swift in Sources */,
 				9DA5AC502CA47E4800D374D8 /* OnboardingView.swift in Sources */,
