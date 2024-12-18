@@ -7,105 +7,121 @@
 
 import SwiftUI
 
+import SwiftUI
+
 struct PurchaseView: View {
     @StateObject private var purchaseManager = PurchaseManager.shared
-    @State private var isLoading = false
     @Environment(\.colorScheme) var colorScheme
+    @State private var isLoading = false
     
     var body: some View {
-        VStack(spacing: 30) {
-            header
-            
-            subscriptionInfo
-            
-            buyButton
-            
-            restorePurchaseButton
-            
-            if isLoading {
-                ProgressView()
-                    .progressViewStyle(CircularProgressViewStyle(tint: .red))
-                    .scaleEffect(1.5)
+        GeometryReader { geometry in
+            ZStack {
+                backgroundColor.edgesIgnoringSafeArea(.all)
+                
+                VStack(spacing: geometry.size.height * 0.04) {
+                    headerSection
+                    
+                    premiumFeatures(size: geometry.size)
+                    
+                    freeTrialButton
+                        .frame(height: geometry.size.height * 0.07)
+                    
+                    
+                    
+                    restorePurchaseButton
+                }
+                .padding(.horizontal, geometry.size.width * 0.06)
+                
+                if isLoading {
+                    ProgressView()
+                        .progressViewStyle(CircularProgressViewStyle(tint: .red))
+                        .scaleEffect(1.5)
+                }
             }
         }
-        .padding()
-        .background(backgroundColor.edgesIgnoringSafeArea(.all))
     }
     
-    private var header: some View {
+    private var headerSection: some View {
         VStack(spacing: 10) {
             Image("pufftracklogo")
-                .resizable() // Makes the image resizable
-                .aspectRatio(contentMode: .fit) // Maintains aspect ratio
-                .frame(width: 60, height: 60) // Sets the size of the image
-                .foregroundColor(.red) // Apply a color overlay if needed, or remove this if you don't want to tint the image
+                .resizable()
+                .aspectRatio(contentMode: .fit)
+                .frame(height: 60)
+                .foregroundColor(.red)
             
-            Text("Unlock PuffTrack Premium")
-                .font(.system(size: 28, weight: .bold))
+            Text("PuffTrack Premium")
+                .font(.system(size: 32, weight: .bold))
                 .foregroundColor(textColor)
             
-            Text("Track your progress, connect with friends, and stay motivated on your journey to quit vaping.")
-                .font(.body)
+            Text("Unlock advanced features to help you quit vaping for good.")
+                .font(.headline)
+                .foregroundColor(textColor.opacity(0.7))
                 .multilineTextAlignment(.center)
-                .foregroundColor(textColor.opacity(0.8))
                 .padding(.horizontal)
         }
     }
-    private var subscriptionInfo: some View {
-        VStack(spacing: 15) {
-            Text("Monthly Subscription")
-                .font(.headline)
-                .foregroundColor(textColor)
-            
-            if let subscription = purchaseManager.subscriptions.first {
-                Text(subscription.displayPrice)
-                    .font(.system(size: 36, weight: .bold))
-                    .foregroundColor(.red)
-            } else {
-                Text("Loading...")
-                    .font(.system(size: 36, weight: .bold))
-                    .foregroundColor(.gray)
+    
+    private func premiumFeatures(size: CGSize) -> some View {
+        VStack(spacing: size.height * 0.02) {
+            HStack(spacing: size.width * 0.05) {
+                featureItem(icon: "chart.bar.fill", text: "Track progress")
+                
+                featureItem(icon: "person.3.fill", text: "Social support")
             }
             
-            VStack(alignment: .leading, spacing: 10) {
-                featureRow(icon: "chart.bar.fill", text: "Track your daily puff count")
-                featureRow(icon: "person.3.fill", text: "Connect with friends for support")
-                featureRow(icon: "dollarsign.circle.fill", text: "See your potential savings")
-                featureRow(icon: "bell.badge.fill", text: "Personalized notifications")
+            HStack(spacing: size.width * 0.05) {
+                featureItem(icon: "dollarsign.circle", text: "Savings tracker")
+                
+                featureItem(icon: "bell.badge.fill", text: "Custom alerts")
+            }
+        }
+    }
+    
+    private func featureItem(icon: String, text: String) -> some View {
+        ZStack {
+            RoundedRectangle(cornerRadius: 15)
+                .fill(Color.gray.opacity(0.1))
+            
+            VStack(spacing: 15) {
+                Image(systemName: icon)
+                    .foregroundColor(.red)
+                    .font(.system(size: 34))
+                
+                Text(text)
+                    .font(.subheadline)
+                    .fontWeight(.medium)
+                    .multilineTextAlignment(.center)
+                    .foregroundColor(textColor)
             }
             .padding()
-            .background(cardBackgroundColor)
-            .cornerRadius(15)
         }
+        .fixedSize(horizontal: false, vertical: true)
     }
     
-    private func featureRow(icon: String, text: String) -> some View {
-        HStack(spacing: 15) {
-            Image(systemName: icon)
-                .foregroundColor(.red)
-                .font(.system(size: 22))
-            Text(text)
-                .font(.subheadline)
-                .foregroundColor(textColor)
-        }
-    }
-    
-    private var buyButton: some View {
+    private var freeTrialButton: some View {
         Button(action: {
             Task {
                 await purchaseSubscription()
             }
         }) {
-            Text("Subscribe Now")
-                .fontWeight(.semibold)
-                .foregroundColor(.white)
-                .frame(maxWidth: .infinity)
-                .padding()
-                .background(Color.red)
-                .cornerRadius(10)
+            VStack(spacing: 4) {
+                Text("Start Free Trial")
+                    .fontWeight(.semibold)
+                    .foregroundColor(.white)
+                
+                Text("3 days free, then \(purchaseManager.subscriptions.first?.displayPrice ?? "") / month")
+                    .font(.caption)
+                    .foregroundColor(.white.opacity(0.8))
+            }
+            .padding()
+            .frame(maxWidth: .infinity)
+            .background(Color.red)
+            .cornerRadius(30)
         }
         .disabled(isLoading || purchaseManager.subscriptions.isEmpty)
     }
+    
     
     private var restorePurchaseButton: some View {
         Button(action: {
@@ -114,7 +130,9 @@ struct PurchaseView: View {
             }
         }) {
             Text("Restore Purchase")
+                .font(.subheadline)
                 .foregroundColor(.red)
+                .padding(.bottom)
         }
         .disabled(isLoading)
     }
@@ -127,7 +145,6 @@ struct PurchaseView: View {
             try await purchaseManager.purchase(subscription)
         } catch {
             print("Failed to purchase: \(error)")
-            // Here you could show an alert to the user about the failure
         }
         isLoading = false
     }
@@ -138,21 +155,16 @@ struct PurchaseView: View {
             try await purchaseManager.restorePurchases()
         } catch {
             print("Failed to restore purchases: \(error)")
-            // Here you could show an alert to the user about the failure
         }
         isLoading = false
     }
     
-    var backgroundColor: Color {
+    private var backgroundColor: Color {
         colorScheme == .dark ? Color.black : Color.white
     }
     
-    var textColor: Color {
-        colorScheme == .dark ? Color.white : Color.black
-    }
-    
-    var cardBackgroundColor: Color {
-        colorScheme == .dark ? Color.gray.opacity(0.2) : Color.gray.opacity(0.1)
+    private var textColor: Color {
+        colorScheme == .dark ? .white : .black
     }
 }
 

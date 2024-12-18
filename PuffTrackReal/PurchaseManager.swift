@@ -13,7 +13,6 @@ class PurchaseManager: ObservableObject {
     static let shared = PurchaseManager()
     
     @Published private(set) var subscriptions: [Product] = []
-    @Published private(set) var purchasedSubscriptions: [Product] = []
     @Published private(set) var isSubscribed = true
     
     private let productIds = ["pufftracksub199"]
@@ -26,7 +25,6 @@ class PurchaseManager: ObservableObject {
             await observeTransactionUpdates()
         }
         
-        // Set up a timer to check subscription status periodically
         updateTimer = Timer.publish(every: 60 * 5, on: .main, in: .common)
             .autoconnect()
             .sink { [weak self] _ in
@@ -69,37 +67,21 @@ class PurchaseManager: ObservableObject {
         do {
             var hasActiveSubscription = false
             
+            // Check current entitlements (both trial and paid subscriptions)
             for await result in Transaction.currentEntitlements {
                 guard case .verified(let transaction) = result else {
                     continue
                 }
                 
+                // If we find any valid transaction, user is subscribed
                 if transaction.productType == .autoRenewable {
-                    let product = try await Product.products(for: [transaction.productID]).first
-                    
-                    if let subscription = product {
-                        let statuses = try await subscription.subscription?.status ?? []
-                        
-                        for status in statuses {
-                            switch status.state {
-                            case .subscribed, .inGracePeriod:
-                                hasActiveSubscription = true
-                                purchasedSubscriptions = [subscription]
-                                break
-                            default:
-                                continue
-                            }
-                        }
-                        
-                        if hasActiveSubscription {
-                            break
-                        }
-                    }
+                    hasActiveSubscription = true
+                    break
                 }
             }
             
             isSubscribed = hasActiveSubscription
-            print("subs: \(isSubscribed)" )
+            print("Subscription status: \(isSubscribed)")
         } catch {
             print("Failed to update subscription status: \(error)")
             isSubscribed = false
