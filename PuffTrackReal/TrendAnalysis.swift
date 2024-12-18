@@ -1,3 +1,12 @@
+//
+//  TrendAnalysis.swift
+//  PuffTrack
+//
+//  Created by Kaan Şenol on 18.12.2024.
+//
+
+import SwiftUI
+
 struct TrendAnalysis: View {
     @ObservedObject var viewModel: PuffTrackViewModel
     let timeRange: String
@@ -127,7 +136,7 @@ struct TrendAnalysis: View {
         viewModel.model.puffs.reduce(into: [:]) { dict, puff in
             let hour = Calendar.current.component(.hour, from: puff.timestamp)
             dict[hour, default: 0] += 1
-        }.map { (String($0), $1) }
+        }.map { (String(describing: $0), $1) }
         .sorted { $0.0 < $1.0 }
     }
     
