@@ -14,7 +14,7 @@ class PurchaseManager: ObservableObject {
     
     @Published private(set) var subscriptions: [Product] = []
     @Published private(set) var purchasedSubscriptions: [Product] = []
-    @Published private(set) var isSubscribed = false
+    @Published private(set) var isSubscribed = true
     
     private let productIds = ["pufftracksub199"]
     private var updateTimer: AnyCancellable?
