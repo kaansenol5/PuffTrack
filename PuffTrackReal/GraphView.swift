@@ -17,98 +17,79 @@ struct GraphView: View {
     @Environment(\.presentationMode) var presentationMode
     @Environment(\.colorScheme) var colorScheme
     @State private var selectedTimeRange = TimeRange.week
+    @State private var selectedBarIndex: Int? = nil
     
-    enum TimeRange {
-        case day, week, month
-        
-        var days: Int {
-            switch self {
-            case .day: return 1
-            case .week: return 7
-            case .month: return 30
-            }
-        }
-        
-        var title: String {
-            switch self {
-            case .day: return "Day"
-            case .week: return "Week"
-            case .month: return "Month"
-            }
-        }
+    enum TimeRange: String, CaseIterable {
+        case hours = "12H"
+        case week = "7D"
+        case month = "1M"
     }
-
-
-    private var maxValue: Int {
-        let max = chartData.map { $0.1 }.max() ?? 0
-        return max > 0 ? max : 10  // Use 10 as minimum max value to show proper scaling when all values are 0
-    }
-
-    private var chartData: [(Date, Int)] {
+    
+    private var chartData: [(label: String, value: Int)] {
         let calendar = Calendar.current
-        let today = Date()
+        let now = Date()
         
         switch selectedTimeRange {
-        case .day:
-            // Show last 24 hours in 4-hour intervals
+        case .hours:
+            // 6 bars, 2-hour intervals
             return (0..<6).map { interval in
-                let date = calendar.date(byAdding: .hour, value: -(interval * 4), to: today)!
+                let endDate = calendar.date(byAdding: .hour, value: -(interval * 2), to: now)!
+                let startDate = calendar.date(byAdding: .hour, value: -2, to: endDate)!
+                
+                let formatter = DateFormatter()
+                formatter.dateFormat = "ha"
+                let label = "\(formatter.string(from: startDate))-\(formatter.string(from: endDate))"
+                
                 let count = viewModel.model.puffs.filter {
-                    calendar.isDate($0.timestamp, equalTo: date, toGranularity: .hour) ||
-                    calendar.isDate($0.timestamp, equalTo: date, toGranularity: .hour) ||
-                    calendar.isDate($0.timestamp, equalTo: date, toGranularity: .hour) ||
-                    calendar.isDate($0.timestamp, equalTo: date, toGranularity: .hour)
+                    $0.timestamp >= startDate && $0.timestamp <= endDate
                 }.count
-                return (date, count)
+                
+                return (label, count)
             }.reversed()
             
         case .week:
-            // Daily data for the week
+            // 7 bars, daily
             return (0..<7).map { dayOffset in
-                let date = calendar.date(byAdding: .day, value: -dayOffset, to: today)!
+                let date = calendar.date(byAdding: .day, value: -dayOffset, to: now)!
+                let formatter = DateFormatter()
+                formatter.dateFormat = "E"  // "Mon", "Tue", etc.
+                let label = formatter.string(from: date)
                 let count = CalculationEngine.getPuffCountForDate(date, puffs: viewModel.model.puffs)
-                return (date, count)
+                return (label, count)
             }.reversed()
             
         case .month:
-            // Show data by 3-day intervals for the month
-            return (0..<10).map { interval in
-                let startDate = calendar.date(byAdding: .day, value: -(interval * 3), to: today)!
-                var totalCount = 0
-                for dayOffset in 0..<3 {
-                    let date = calendar.date(byAdding: .day, value: -dayOffset, to: startDate)!
-                    totalCount += CalculationEngine.getPuffCountForDate(date, puffs: viewModel.model.puffs)
-                }
-                return (startDate, totalCount)
+            // 4 bars, weekly
+            return (0..<4).map { weekOffset in
+                let endDate = calendar.date(byAdding: .weekOfYear, value: -weekOffset, to: now)!
+                let startDate = calendar.date(byAdding: .weekOfYear, value: -1, to: endDate)!
+                
+                let formatter = DateFormatter()
+                formatter.dateFormat = "MMM d"
+                let label = "\(formatter.string(from: startDate))-\(formatter.string(from: endDate))"
+                
+                let count = viewModel.model.puffs.filter {
+                    $0.timestamp >= startDate && $0.timestamp <= endDate
+                }.count
+                
+                return (label, count)
             }.reversed()
         }
     }
-
-    private func formatDate(_ date: Date) -> String {
-        let formatter = DateFormatter()
-        switch selectedTimeRange {
-        case .day:
-            formatter.dateFormat = "HH:mm"
-        case .week, .month:
-            formatter.dateFormat = "MM/dd"
-        }
-        return formatter.string(from: date)
+    
+    private var maxValue: Int {
+        let max = chartData.map { $0.value }.max() ?? 0
+        return max > 0 ? max : 10  // Minimum scale of 10 for empty data
     }
-    private var hasData: Bool {
-        !viewModel.model.puffs.isEmpty
-    }
-
+    
     var body: some View {
         NavigationView {
             ScrollView {
                 VStack(spacing: 20) {
                     timeRangePicker
-                    
                     statsCards
-                    
                     graphCard
-                    
-                    trendAnalysis
+                    TrendAnalysis(viewModel: viewModel, timeRange: selectedTimeRange.rawValue)
                 }
                 .padding()
             }
@@ -117,158 +98,127 @@ struct GraphView: View {
             .navigationBarItems(trailing: Button("Done") {
                 presentationMode.wrappedValue.dismiss()
             })
+            // Dismiss selected bar when tapping outside
+            .onTapGesture {
+                selectedBarIndex = nil
+            }
         }
     }
     
     private var timeRangePicker: some View {
-        HStack {
-            ForEach([TimeRange.day, .week, .month], id: \.days) { range in
+        HStack(spacing: 0) {
+            ForEach(TimeRange.allCases, id: \.self) { range in
                 Button(action: {
                     withAnimation {
                         selectedTimeRange = range
+                        selectedBarIndex = nil
                     }
                 }) {
-                    Text(range.title)
+                    Text(range.rawValue)
                         .font(.headline)
                         .foregroundColor(selectedTimeRange == range ? .white : .gray)
-                        .padding()
                         .frame(maxWidth: .infinity)
-                        .background(selectedTimeRange == range ? Color.red : Color.clear)
-                        .cornerRadius(10)
+                        .padding(.vertical, 12)
+                        .background(
+                            RoundedRectangle(cornerRadius: 10)
+                                .fill(selectedTimeRange == range ? Color.red : Color.clear)
+                                .animation(.spring(), value: selectedTimeRange)
+                        )
                 }
             }
         }
-        .padding()
+        .padding(4)
         .background(Color.gray.opacity(0.1))
-        .cornerRadius(15)
-    }
-    
-    private var statsCards: some View {
-        HStack(spacing: 15) {
-            StatBox(title: "Average", value: "\(averagePuffs)", subtitle: "puffs/day")
-            StatBox(title: "Highest", value: "\(maxPuffs)", subtitle: "puffs/day")
-        }
+        .cornerRadius(12)
     }
     
     private var graphCard: some View {
         VStack(alignment: .leading, spacing: 8) {
             GeometryReader { geometry in
-                ZStack {
-                    // Background grid
-                    VStack(spacing: geometry.size.height / 4) {
-                        ForEach(0..<4) { _ in
-                            Divider()
-                                .background(Color.gray.opacity(0.2))
-                        }
-                    }
-                    
-                    // Line Chart
-                    Path { path in
-                        let points = chartData.enumerated().map { index, dataPoint -> CGPoint in
-                            let x = CGFloat(index) / CGFloat(max(chartData.count - 1, 1)) * geometry.size.width
-                            let y = geometry.size.height - (CGFloat(dataPoint.1) / CGFloat(max(maxValue, 1))) * geometry.size.height
-                            return CGPoint(x: x, y: y)
-                        }
-                        
-                        if let firstPoint = points.first {
-                            path.move(to: firstPoint)
-                            for index in 1..<points.count {
-                                let point = points[index]
-                                let control1 = CGPoint(
-                                    x: points[index-1].x + (point.x - points[index-1].x) / 2,
-                                    y: points[index-1].y
-                                )
-                                let control2 = CGPoint(
-                                    x: points[index-1].x + (point.x - points[index-1].x) / 2,
-                                    y: point.y
-                                )
-                                path.addCurve(to: point, control1: control1, control2: control2)
+                ZStack(alignment: .bottom) {
+                    // Bars
+                    HStack(alignment: .bottom, spacing: geometry.size.width * 0.02) {
+                        ForEach(Array(chartData.enumerated()), id: \.offset) { index, dataPoint in
+                            VStack(spacing: 4) {
+                                // Bar
+                                Rectangle()
+                                    .fill(Color.red.opacity(selectedBarIndex == index ? 0.8 : 0.6))
+                                    .frame(height: CGFloat(dataPoint.value) / CGFloat(maxValue) * (geometry.size.height * 0.7))
+                                    .animation(.spring(), value: selectedBarIndex)
+                                    .onTapGesture {
+                                        withAnimation {
+                                            selectedBarIndex = selectedBarIndex == index ? nil : index
+                                        }
+                                    }
+                                
+                                // Label
+                                Text(dataPoint.label)
+                                    .font(.system(size: 10))
+                                    .foregroundColor(.secondary)
+                                    .lineLimit(1)
+                                    .fixedSize()
                             }
+                            .overlay(
+                                Group {
+                                    if selectedBarIndex == index {
+                                        // Speech balloon popup
+                                        Text("\(dataPoint.value)")
+                                            .font(.system(size: 14, weight: .bold))
+                                            .foregroundColor(.white)
+                                            .padding(.horizontal, 8)
+                                            .padding(.vertical, 4)
+                                            .background(
+                                                BalloonShape()
+                                                    .fill(Color.red)
+                                            )
+                                            .offset(y: -40)
+                                            .transition(.scale.combined(with: .opacity))
+                                    }
+                                }
+                            )
                         }
                     }
-                    .stroke(Color.red, style: StrokeStyle(lineWidth: 2, lineCap: .round))
-                    
-                    // Data Points with labels
-                    ForEach(Array(chartData.enumerated()), id: \.offset) { index, dataPoint in
-                        VStack(spacing: 4) {
-                            // Data label
-                            Text("\(dataPoint.1)")
-                                .font(.system(size: 10))
-                                .foregroundColor(.secondary)
-                            
-                            // Data point
-                            Circle()
-                                .fill(Color.red)
-                                .frame(width: 8, height: 8)
-                            
-                            // Date label
-                            Text(formatDate(dataPoint.0))
-                                .font(.system(size: 10))
-                                .foregroundColor(.secondary)
-                        }
-                        .position(
-                            x: CGFloat(index) / CGFloat(max(chartData.count - 1, 1)) * geometry.size.width,
-                            y: geometry.size.height - (CGFloat(dataPoint.1) / CGFloat(max(maxValue, 1))) * geometry.size.height
-                        )
-                    }
+                    .frame(maxWidth: .infinity, maxHeight: .infinity)
+                    .padding(.bottom, 20)
                 }
             }
-            .frame(height: 200)
+            .frame(height: 250)
         }
         .padding()
-        .background(cardBackgroundColor)
-        .cornerRadius(15)
-    }
-
-
-    private var trendAnalysis: some View {
-        VStack(alignment: .leading, spacing: 10) {
-            Text("Trend Analysis")
-                .font(.headline)
-                .foregroundColor(textColor)
-            
-            Text(trendDescription)
-                .font(.subheadline)
-                .foregroundColor(.gray)
-        }
-        .padding()
-        .frame(maxWidth: .infinity, alignment: .leading)
         .background(cardBackgroundColor)
         .cornerRadius(15)
     }
     
+    private var statsCards: some View {
+        HStack(spacing: 15) {
+            StatBox(title: "Average", value: "\(averagePuffs)", subtitle: "puffs/\(timeframeUnit)")
+            StatBox(title: "Highest", value: "\(maxPuffs)", subtitle: "puffs/\(timeframeUnit)")
+        }
+    }
+    
+    private var timeframeUnit: String {
+        switch selectedTimeRange {
+        case .hours: return "2h"
+        case .week: return "day"
+        case .month: return "week"
+        }
+    }
+    
+
+    
+    // Helper computed properties
     private var averagePuffs: Int {
         guard !chartData.isEmpty else { return 0 }
-        let sum = chartData.reduce(0) { $0 + $1.1 }
+        let sum = chartData.reduce(0) { $0 + $1.value }
         return sum / chartData.count
     }
-
+    
     private var maxPuffs: Int {
-        chartData.map { $0.1 }.max() ?? 0
-    }
-
-    private var trendDescription: String {
-        guard hasData else {
-            return "Start tracking your puffs to see trends and insights."
-        }
-        let trend = calculateTrend()
-        if trend > 0 {
-            return "Your puff count is trending upward. Consider setting a lower daily limit."
-        } else if trend < 0 {
-            return "Great job! Your puff count is trending downward."
-        } else {
-            return "Your puff count has been steady. Set new goals to reduce it further."
-        }
-    }
-    private func calculateTrend() -> Double {
-        guard chartData.count > 1 else { return 0 }
-        let firstHalf = chartData.prefix(chartData.count / 2).map { $0.1 }
-        let secondHalf = chartData.suffix(chartData.count / 2).map { $0.1 }
-        let firstAvg = Double(firstHalf.reduce(0, +)) / Double(firstHalf.count)
-        let secondAvg = Double(secondHalf.reduce(0, +)) / Double(secondHalf.count)
-        return secondAvg - firstAvg
+        chartData.map { $0.value }.max() ?? 0
     }
     
+    
+    // Colors
     private var backgroundColor: Color {
         colorScheme == .dark ? Color.black : Color.white
     }
@@ -282,10 +232,29 @@ struct GraphView: View {
     }
 }
 
+// Custom speech balloon shape
+struct BalloonShape: Shape {
+    func path(in rect: CGRect) -> Path {
+        var path = Path()
+        
+        // Bubble
+        let bubbleRect = CGRect(x: 0, y: 0, width: rect.width, height: rect.height - 8)
+        let cornerRadius: CGFloat = 8
+        path.addRoundedRect(in: bubbleRect, cornerSize: CGSize(width: cornerRadius, height: cornerRadius))
+        
+        // Triangle
+        path.move(to: CGPoint(x: rect.width * 0.5 - 6, y: rect.height - 8))
+        path.addLine(to: CGPoint(x: rect.width * 0.5, y: rect.height))
+        path.addLine(to: CGPoint(x: rect.width * 0.5 + 6, y: rect.height - 8))
+        
+        return path
+    }
+}
 struct StatBox: View {
     let title: String
     let value: String
     let subtitle: String
+    @Environment(\.colorScheme) var colorScheme
     
     var body: some View {
         VStack(alignment: .leading, spacing: 5) {
@@ -294,6 +263,7 @@ struct StatBox: View {
                 .foregroundColor(.gray)
             Text(value)
                 .font(.system(size: 24, weight: .bold))
+                .foregroundColor(colorScheme == .dark ? .white : .black)
             Text(subtitle)
                 .font(.caption)
                 .foregroundColor(.gray)
