@@ -8,7 +8,7 @@
 import Foundation
 import Combine
 import UserNotifications
-import WidgetKit
+
 
 class PuffTrackViewModel: ObservableObject {
     @Published var model: PuffTrackData
@@ -155,7 +155,7 @@ class PuffTrackViewModel: ObservableObject {
         model.addPuff(socialsViewModel: socialsViewModel)
         objectWillChange.send()  // Ensure the UI updates
         updateCalculations()
-        updateWidgetData()
+        
     }
     
     func updateSettings(vapeCost: Double, puffsPerVape: Int, monthlySpending: Double, dailyPuffLimit: Int) {
@@ -175,16 +175,6 @@ class PuffTrackViewModel: ObservableObject {
             }
             .store(in: &cancellables)
     }
-    func updateWidgetData() {
-        WidgetDataManager.shared.saveWidgetData(
-            hoursSinceLastPuff: hoursSinceLastPuff,
-            puffsToday: puffCount,
-            dailyLimit: model.settings.dailyPuffLimit,
-            streak: streak
-        )
-        WidgetCenter.shared.reloadAllTimelines()
-    }
-
     private func updateCalculations() {
         streak = CalculationEngine.calculateStreak(puffs: model.puffs)
         
