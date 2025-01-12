@@ -26,7 +26,7 @@ struct ContentView: View {
         Group {
             if !onboardingComplete {
                 OnboardingView(isOnboardingComplete: $onboardingComplete, viewModel: viewModel)
-            } else if !purchaseManager.isSubscribed {
+            } else if !true {
                 PurchaseView()
             } else {
                 
@@ -138,55 +138,77 @@ struct ContentView: View {
     }
 
     private func puffTracker(size: CGSize) -> some View {
-            VStack(spacing: size.height * 0.02) {
-                ZStack {
-                    Circle()
-                        .trim(from: 0, to: 0.5)
-                        .stroke(Color.gray.opacity(0.3), lineWidth: 20)
-                        .frame(width: min(size.width * 0.5, size.height * 0.3), height: min(size.width * 0.5, size.height * 0.3))
-                        .rotationEffect(.degrees(180))
-                    
-                    Circle()
-                        .trim(from: 0, to: min(CGFloat(viewModel.puffCount) / CGFloat(viewModel.model.settings.dailyPuffLimit) * 0.5, 0.5))
-                        .stroke(Color.red, lineWidth: 20)
-                        .frame(width: min(size.width * 0.5, size.height * 0.3), height: min(size.width * 0.5, size.height * 0.3))
-                        .rotationEffect(.degrees(180))
-                        .animation(.spring(), value: viewModel.puffCount)
-
-                    VStack {
-                        Text("\(viewModel.puffCount)")
-                            .font(.system(size: min(size.width * 0.12, size.height * 0.07), weight: .bold, design: .rounded))
-                            .foregroundColor(textColor)
-                        Text("PUFFS")
-                            .font(.caption)
-                            .foregroundColor(.gray)
-                        Text(hoursSinceLastPuffText)
-                            .font(.caption)
-                            .foregroundColor(.gray)
-                    }
-                    .transition(.scale.combined(with: .opacity))
-                }
+        // Safely handle dailyPuffLimit = 0 by using a fallback of 1
+        // (or handle it in any custom way, e.g. show a message if limit=0)
+        let safeLimit = max(1, viewModel.model.settings.dailyPuffLimit)
+        let ratio = CGFloat(viewModel.puffCount) / CGFloat(safeLimit)
+        
+        return VStack(spacing: size.height * 0.02) {
+            ZStack {
+                // Background half-circle
+                Circle()
+                    .trim(from: 0, to: 0.5)
+                    .stroke(Color.gray.opacity(0.3), lineWidth: 20)
+                    .frame(
+                        width: min(size.width * 0.5, size.height * 0.3),
+                        height: min(size.width * 0.5, size.height * 0.3)
+                    )
+                    .rotationEffect(.degrees(180))
                 
-                HStack(spacing: 15) {
-                    PuffButton(action: {
-                        viewModel.addPuff(socialsViewModel: socialsViewModel)
-                        syncer?.syncUnsynedPuffs()
-                    })
-                    .frame(width: min(size.width * 0.45, 200))
+                // Filled portion
+                Circle()
+                    .trim(from: 0, to: min(ratio * 0.5, 0.5))   //  ratio * 0.5 ensures half-circle
+                    .stroke(Color.red, lineWidth: 20)
+                    .frame(
+                        width: min(size.width * 0.5, size.height * 0.3),
+                        height: min(size.width * 0.5, size.height * 0.3)
+                    )
+                    .rotationEffect(.degrees(180))
+                    .animation(.spring(), value: ratio)
+                
+                // Center text
+                VStack {
+                    Text("\(viewModel.puffCount)")
+                        .font(.system(
+                            size: min(size.width * 0.12, size.height * 0.07),
+                            weight: .bold,
+                            design: .rounded
+                        ))
+                        .foregroundColor(textColor)
                     
-                    Button(action: { isGraphViewPresented.toggle() }) {
-                        Image(systemName: "chart.xyaxis.line")
-                            .font(.system(size: 20, weight: .bold))
-                            .foregroundColor(.red)
-                            .frame(width: 50, height: 50)
-                            .background(colorScheme == .dark ? Color.black : Color.white)
-                            .cornerRadius(10)
-                            .shadow(color: Color.black.opacity(0.1), radius: 5, x: 0, y: 3)
-                    }
+                    Text("PUFFS")
+                        .font(.caption)
+                        .foregroundColor(.gray)
+                    
+                    Text(hoursSinceLastPuffText)
+                        .font(.caption)
+                        .foregroundColor(.gray)
                 }
-                .frame(width: min(size.width * 0.6, 280))
+                .transition(.scale.combined(with: .opacity))
             }
+            
+            // Buttons row
+            HStack(spacing: 15) {
+                PuffButton(action: {
+                    viewModel.addPuff(socialsViewModel: socialsViewModel)
+                    syncer?.syncUnsynedPuffs()
+                })
+                .frame(width: min(size.width * 0.45, 200))
+                
+                Button(action: { isGraphViewPresented.toggle() }) {
+                    Image(systemName: "chart.xyaxis.line")
+                        .font(.system(size: 20, weight: .bold))
+                        .foregroundColor(.red)
+                        .frame(width: 50, height: 50)
+                        .background(colorScheme == .dark ? Color.black : Color.white)
+                        .cornerRadius(10)
+                        .shadow(color: Color.black.opacity(0.1), radius: 5, x: 0, y: 3)
+                }
+            }
+            .frame(width: min(size.width * 0.6, 280))
         }
+    }
+
     private var hoursSinceLastPuffText: String {
         let hours = viewModel.hoursSinceLastPuff
         if hours < 1 {
