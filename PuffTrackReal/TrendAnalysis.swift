@@ -165,6 +165,11 @@ struct TrendAnalysis: View {
     }
     
     private func calculateGoalProgress() -> (icon: String, title: String, value: String, color: Color) {
+        // If dailyPuffLimit is 0 or negative, handle it gracefully.
+        guard viewModel.settings.dailyPuffLimit > 0 else {
+            return ("exclamationmark.triangle.fill", "No Limit Set", "N/A", .gray)
+        }
+        
         let percentage = Double(viewModel.puffCount) / Double(viewModel.settings.dailyPuffLimit) * 100
         
         switch percentage {
@@ -178,6 +183,7 @@ struct TrendAnalysis: View {
             return ("checkmark.circle.fill", "On Track", "\(Int(percentage))%", .green)
         }
     }
+
     
     private func calculateWeeklyComparison() -> (trend: Double, percentage: Int) {
         let calendar = Calendar.current
