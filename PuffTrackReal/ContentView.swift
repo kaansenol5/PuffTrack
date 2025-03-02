@@ -8,14 +8,8 @@ import SwiftUI
 
 struct ContentView: View {
     @StateObject private var viewModel = PuffTrackViewModel()
-    @StateObject private var socialsViewModel = SocialsViewModel()
-    @StateObject private var purchaseManager = PurchaseManager.shared
-    @State private var syncer: Syncer?
     @State private var isSettingsPresented = false
     @State private var isMilestonesPresented = false
-    @State private var isFriendsPresented = false
-    @State private var isAuthPresented = false
-    @State private var isPurchaseViewPresented = false
     @State private var isStatisticsViewPresented = false
     @State private var isGraphViewPresented = false
     @State private var isWithdrawalTrackerPresented = false
@@ -26,19 +20,8 @@ struct ContentView: View {
         Group {
             if !onboardingComplete {
                 OnboardingView(isOnboardingComplete: $onboardingComplete, viewModel: viewModel)
-            } else if !true {
-                PurchaseView()
             } else {
-                
                 mainContent
-                    .onChange(of: purchaseManager.isSubscribed) { newValue in
-                        if !newValue {
-                            isPurchaseViewPresented = true
-                        }
-                    }
-                    .sheet(isPresented: $isPurchaseViewPresented) {
-                        PurchaseView()
-                    }
             }
         }
     }
@@ -50,31 +33,14 @@ struct ContentView: View {
                     puffTracker(size: geometry.size)
                     withdrawalTrackerSection
                     statsSection
-                    if geometry.size.height > 647 {
-                        socialSection
-                    }
                 }
                 .padding(.horizontal, geometry.size.width * 0.05)
                 .padding(.vertical, geometry.size.height * 0.02)
         }
-        .alert(isPresented: $socialsViewModel.isErrorDisplayed) {
-            Alert(
-                title: Text("Alert"),
-                message: Text(socialsViewModel.errorMessage),
-                dismissButton: .default(Text("OK")) {
-                    print("OK tapped")
-                    socialsViewModel.isErrorDisplayed = false
-                    socialsViewModel.errorMessage = ""
-                }
-            )
-        }
         .onAppear {
-            if syncer == nil {
-                syncer = Syncer(puffTrackViewModel: viewModel, socialsViewModel: socialsViewModel)
-            }
         }
         .sheet(isPresented: $isSettingsPresented) {
-            SettingsView(viewModel: viewModel, socialsViewModel: socialsViewModel, isAuthViewPresented: isAuthPresented)
+            SettingsView(viewModel: viewModel)
         }
         .sheet(isPresented: $isStatisticsViewPresented) {
             StatisticsView(viewModel: viewModel)
@@ -85,18 +51,8 @@ struct ContentView: View {
         .sheet(isPresented: $isMilestonesPresented) {
             MilestonesView(viewModel: viewModel)
         }
-        .sheet(isPresented: $isAuthPresented) {
-            AuthView(socialsViewModel: socialsViewModel, isPresented: $isAuthPresented)
-        }
         .sheet(isPresented: $isGraphViewPresented){
             GraphView(viewModel: viewModel)
-        }
-        .sheet(isPresented: $isFriendsPresented) {
-            if socialsViewModel.isUserLoggedIn() {
-                FriendsView(socialsViewModel: socialsViewModel)
-            } else {
-                AuthView(socialsViewModel: socialsViewModel, isPresented: $isAuthPresented)
-            }
         }
     }
 
@@ -110,25 +66,6 @@ struct ContentView: View {
                 }
                 
                 Spacer()
-                
-                if screenHeight <= 647 {
-                    Button(action: {
-                        if socialsViewModel.isUserLoggedIn() {
-                            isFriendsPresented.toggle()
-                        } else {
-                            isAuthPresented.toggle()
-                        }
-                    }) {
-                        Image(systemName: "person.2.fill")
-                            .foregroundColor(.red)
-                            .imageScale(.large)
-                            .frame(width: 24, height: 24)
-                    }
-                } else {
-                    Circle()
-                        .fill(Color.red)
-                        .frame(width: 10, height: 10)
-                }
             }
             
             Text("PuffTrack")
@@ -190,8 +127,7 @@ struct ContentView: View {
             // Buttons row
             HStack(spacing: 15) {
                 PuffButton(action: {
-                    viewModel.addPuff(socialsViewModel: socialsViewModel)
-                    syncer?.syncUnsynedPuffs()
+                    viewModel.addPuff()
                 })
                 .frame(width: min(size.width * 0.45, 200))
                 
@@ -283,54 +219,6 @@ struct ContentView: View {
                 }
             }
             .frame(height: 100)
-        }
-    }
-
-    private var socialSection: some View {
-        Button(action: {
-            if socialsViewModel.isUserLoggedIn() {
-                isFriendsPresented.toggle()
-            } else {
-                isAuthPresented.toggle()
-            }
-        }) {
-            VStack(alignment: .leading, spacing: 1) {
-                Text("Friends")
-                    .font(.headline)
-                    .foregroundColor(textColor)
-                if socialsViewModel.serverData?.friends.isEmpty ?? true {
-                    Text("No friends yet, click to add friends")
-                        .foregroundColor(.secondary)
-                }
-                ForEach(socialsViewModel.serverData?.friends.prefix(3) ?? []) { friend in
-                    HStack {
-                        Circle()
-                            .fill(Color.red)
-                            .frame(width: 40, height: 40)
-                            .overlay(
-                                Text(getInitials(from: friend.name))
-                                    .foregroundColor(.white)
-                                    .font(.headline)
-                            )
-                        VStack(alignment: .leading, spacing: 5) {
-                            Text(friend.name)
-                                .foregroundColor(textColor)
-                                .font(.headline)
-                            Text("\(friend.puffsummary.puffsToday) puffs today")
-                                .font(.subheadline)
-                                .foregroundColor(.gray)
-                        }
-                        Spacer()
-                        Text("\(friend.puffsummary.changePercentage)%")
-                            .foregroundColor(Int(friend.puffsummary.changePercentage) ?? 0 >= 0 ? .green : .red)
-                            .font(.subheadline)
-                    }
-                    .padding(.vertical, 5)
-                }
-            }
-            .padding()
-            .background(cardBackgroundColor)
-            .cornerRadius(10)
         }
     }
 

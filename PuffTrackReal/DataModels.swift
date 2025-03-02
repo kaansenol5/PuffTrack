@@ -37,7 +37,7 @@ class PuffTrackData: ObservableObject {
         loadData()
     }
     
-    func addPuff(socialsViewModel: SocialsViewModel) {
+    func addPuff() {
         let newPuff = Puff(id: UUID(), timestamp: Date(), isSynced: false)
         puffs.append(newPuff)
         removeOldPuffs()

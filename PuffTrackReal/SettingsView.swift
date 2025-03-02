@@ -8,10 +8,8 @@ import SwiftUI
 
 struct SettingsView: View {
     @ObservedObject var viewModel: PuffTrackViewModel
-    @ObservedObject var socialsViewModel: SocialsViewModel
     @Environment(\.presentationMode) var presentationMode
     @Environment(\.colorScheme) var colorScheme
-    @State var isAuthViewPresented: Bool
     @State private var vapeCost: String = ""
     @State private var puffsPerVape: String = ""
     @State private var monthlySpending: String = ""
@@ -19,18 +17,12 @@ struct SettingsView: View {
     @State private var activeAlert: ActiveAlert?
     @State private var showViewDataSheet = false
     @State private var userData: String = ""
-    @State private var isEditingName = false
-    @State private var newName = ""
-    @State private var isUpdatingName = false
     
     enum ActiveAlert: Identifiable {
-        case logout, deleteAccount, deleteAccountConfirmation, resetData, resetDataConfirmation, resetDataSuccess
+        case resetData, resetDataConfirmation, resetDataSuccess
         
         var id: Int {
             switch self {
-            case .logout: return 0
-            case .deleteAccount: return 1
-            case .deleteAccountConfirmation: return 2
             case .resetData: return 3
             case .resetDataConfirmation: return 4
             case .resetDataSuccess: return 5
@@ -41,10 +33,6 @@ struct SettingsView: View {
     var body: some View {
         NavigationView {
             Form {
-                accountSection
-                if(socialsViewModel.isUserLoggedIn()){
-                    accountManagementSection
-                }
                 vapeDetailsSection
                 dailyPuffLimitSection
                 monthlySpendingSection
@@ -62,33 +50,6 @@ struct SettingsView: View {
         .onAppear(perform: loadCurrentSettings)
         .alert(item: $activeAlert) { alertType in
             switch alertType {
-            case .logout:
-                return Alert(
-                    title: Text("Logout"),
-                    message: Text("Are you sure you want to logout?"),
-                    primaryButton: .destructive(Text("Logout")) {
-                        socialsViewModel.logout()
-                    },
-                    secondaryButton: .cancel()
-                )
-            case .deleteAccount:
-                return Alert(
-                    title: Text("Delete Account"),
-                    message: Text("Are you sure you want to delete your account? This action cannot be undone."),
-                    primaryButton: .destructive(Text("Delete")) {
-                        activeAlert = .deleteAccountConfirmation
-                    },
-                    secondaryButton: .cancel()
-                )
-            case .deleteAccountConfirmation:
-                return Alert(
-                    title: Text("Confirm Delete Account"),
-                    message: Text("This will permanently delete your account and all associated data. Are you absolutely sure?"),
-                    primaryButton: .destructive(Text("Yes, Delete My Account")) {
-                        deleteAccount()
-                    },
-                    secondaryButton: .cancel()
-                )
             case .resetData:
                 return Alert(
                     title: Text("Reset All Data"),
@@ -142,27 +103,6 @@ struct SettingsView: View {
             }
         }
     }
-        private var accountManagementSection: some View {
-        Section(header: Text("Account Management").foregroundColor(.red)) {
-            if socialsViewModel.isUserLoggedIn(){
-                Button(action: {
-                    activeAlert = .logout
-                }) {
-                    Text("Logout")
-                        .foregroundColor(.red)
-                }
-                Button(action: {
-                    activeAlert = .deleteAccount
-                }) {
-                    Text("Delete My Account")
-                        .foregroundColor(.red)
-                }
-            } else {
-                Text("Not signed in")
-                    .foregroundColor(.gray)
-            }
-        }
-    }
     
     private var resetDataSection: some View {
         Section(header: Text("Data Management").foregroundColor(.red)) {
@@ -182,100 +122,9 @@ struct SettingsView: View {
     private func resetAllData() {
         viewModel.model.puffs = []
         viewModel.model.removeOldPuffs() // This will trigger the save
-        if(socialsViewModel.isUserLoggedIn()){
-            socialsViewModel.removeAllPuffs { result in
-                switch result {
-                case .success(let count):
-                    print("Successfully deleted \(count) puffs")
-                    DispatchQueue.main.async {
-                        activeAlert = .resetDataSuccess
-                    }
-                case .failure(let error):
-                    print("Failed to delete puffs: \(error.localizedDescription)")
-                    // Error handling is already done by the function through isErrorDisplayed and errorMessage
-                }
-            }
-        }
+        activeAlert = .resetDataSuccess
     }
     
-    private var accountSection: some View {
-        Section(header: Text("Account").foregroundColor(.red)) {
-            if socialsViewModel.isUserLoggedIn() {
-                if isEditingName {
-                    HStack {
-                        TextField("Name", text: $newName)
-                        
-                        if isUpdatingName {
-                            ProgressView()
-                                .padding(.horizontal, 4)
-                        } else {
-                            Button("Save") {
-                                updateName()
-                            }
-                            .disabled(newName.isEmpty || newName == socialsViewModel.serverData?.user.name)
-                            .foregroundColor(.red)
-                            
-                            Button("Cancel") {
-                                isEditingName = false
-                                newName = socialsViewModel.serverData?.user.name ?? ""
-                            }
-                            .foregroundColor(.gray)
-                        }
-                    }
-                } else {
-                    HStack {
-                        Text("Name")
-                        Spacer()
-                        Text(socialsViewModel.serverData?.user.name ?? "")
-                            .foregroundColor(.gray)
-                        Button(action: {
-                            newName = socialsViewModel.serverData?.user.name ?? ""
-                            isEditingName = true
-                        }) {
-                            Image(systemName: "pencil")
-                                .foregroundColor(.red)
-                        }
-                    }
-                }
-                
-                HStack {
-                    Text("Email")
-                    Spacer()
-                    Text(socialsViewModel.serverData?.user.email ?? "")
-                        .foregroundColor(.gray)
-                }
-                
-                HStack {
-                    Text("User ID")
-                    Spacer()
-                    Text(socialsViewModel.serverData?.user.id ?? "")
-                        .foregroundColor(.gray)
-                }
-            } else {
-                Text("Not signed in")
-                    .foregroundColor(.gray)
-            }
-        }
-    }
-
-    private func updateName() {
-        guard !newName.isEmpty else { return }
-        isUpdatingName = true
-        
-        socialsViewModel.changeName(newName: newName) { result in
-            DispatchQueue.main.async {
-                isUpdatingName = false
-                switch result {
-                case .success:
-                    isEditingName = false
-                case .failure:
-                    // Error is already handled by socialsViewModel's error display
-                    newName = socialsViewModel.serverData?.user.name ?? ""
-                }
-            }
-        }
-    }
-
     private var vapeDetailsSection: some View {
         Section(header: Text("Vape Details").foregroundColor(.red)) {
             HStack {
@@ -361,37 +210,6 @@ struct SettingsView: View {
             viewModel.updateSettings(vapeCost: cost, puffsPerVape: puffs, monthlySpending: spending, dailyPuffLimit: puffLimit)
         }
         presentationMode.wrappedValue.dismiss()
-    }
-    
-    private func viewMyData() {
-        socialsViewModel.accessData { result in
-            switch result {
-            case .success(let data):
-                if let jsonData = try? JSONSerialization.data(withJSONObject: data, options: .prettyPrinted),
-                   let jsonString = String(data: jsonData, encoding: .utf8) {
-                    userData = jsonString
-                    showViewDataSheet = true
-                } else {
-                    userData = "Error: Could not parse data"
-                    showViewDataSheet = true
-                }
-            case .failure(let error):
-                userData = "Error: \(error.localizedDescription)"
-                showViewDataSheet = true
-            }
-        }
-    }
-    
-    private func deleteAccount() {
-        socialsViewModel.removeData { result in
-            switch result {
-            case .success:
-                socialsViewModel.logout()
-                presentationMode.wrappedValue.dismiss()
-            case .failure(let error):
-                print("Failed to delete account: \(error.localizedDescription)")
-            }
-        }
     }
 }
 

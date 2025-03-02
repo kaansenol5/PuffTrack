@@ -151,8 +151,8 @@ class PuffTrackViewModel: ObservableObject {
         model.settings
     }
     
-    func addPuff(socialsViewModel: SocialsViewModel) {
-        model.addPuff(socialsViewModel: socialsViewModel)
+    func addPuff() {
+        model.addPuff()
         objectWillChange.send()  // Ensure the UI updates
         updateCalculations()
         

@@ -8,20 +8,16 @@
 
 /* Begin PBXBuildFile section */
 		1FAFF658064294BE44D4AED9 /* Pods_PuffTrackReal.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A3CDB7A64601B9AADB206D2E /* Pods_PuffTrackReal.framework */; };
-		9D10B15E2CA3177500ABB4E7 /* Syncer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9D10B15D2CA3177500ABB4E7 /* Syncer.swift */; };
 		9D1989592CCBBFB1008E7204 /* StatisticsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9D1989582CCBBFB1008E7204 /* StatisticsView.swift */; };
 		9D19895B2CCBC310008E7204 /* WithdrawalTrackerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9D19895A2CCBC310008E7204 /* WithdrawalTrackerView.swift */; };
-		9D2C14FA2C95C3EA003DCD12 /* SocialsViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9D2C14F92C95C3EA003DCD12 /* SocialsViewModel.swift */; };
 		9D598CBA2D1336240053EBC0 /* TrendAnalysis.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9D598CB92D1336240053EBC0 /* TrendAnalysis.swift */; };
 		9D6E90A22C95E13000DBC81C /* PuffTrackRealTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9D6E90A12C95E13000DBC81C /* PuffTrackRealTests.swift */; };
-		9D6E90A62C95E73700DBC81C /* FriendsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9D6E90A52C95E73700DBC81C /* FriendsView.swift */; };
 		9D90D65A2CCCF57A002040E3 /* GraphView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9D90D6592CCCF57A002040E3 /* GraphView.swift */; };
 		9D990AC12C7F4EDF00C58EDD /* DataModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9D990AC02C7F4EDF00C58EDD /* DataModels.swift */; };
 		9D990AC32C7F4EED00C58EDD /* CalculationEngine.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9D990AC22C7F4EED00C58EDD /* CalculationEngine.swift */; };
 		9D990AC52C7F4F0700C58EDD /* ViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9D990AC42C7F4F0700C58EDD /* ViewModel.swift */; };
 		9DA5AC502CA47E4800D374D8 /* OnboardingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9DA5AC4F2CA47E4800D374D8 /* OnboardingView.swift */; };
 		9DA5AC532CA5F3B200D374D8 /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9DA5AC522CA5F3B200D374D8 /* SettingsView.swift */; };
-		9DC18E962C95DEE80081F76A /* AuthView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9DC18E952C95DEE80081F76A /* AuthView.swift */; };
 		9DF16EA32C35861800A1E56C /* PuffTrackRealApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9DF16EA22C35861800A1E56C /* PuffTrackRealApp.swift */; };
 		9DF16EA52C35861800A1E56C /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9DF16EA42C35861800A1E56C /* ContentView.swift */; };
 		9DF16EA72C35861800A1E56C /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 9DF16EA62C35861800A1E56C /* Assets.xcassets */; };
@@ -29,8 +25,6 @@
 		9DF16EBE2C35861900A1E56C /* PuffTrackRealUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9DF16EBD2C35861900A1E56C /* PuffTrackRealUITests.swift */; };
 		9DF16EC02C35861900A1E56C /* PuffTrackRealUITestsLaunchTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9DF16EBF2C35861900A1E56C /* PuffTrackRealUITestsLaunchTests.swift */; };
 		9DF40D9D2C7E6CA700CCBF46 /* MilestonesView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9DF40D9C2C7E6CA700CCBF46 /* MilestonesView.swift */; };
-		9DFD2EBD2CB322B000A9458C /* PurchaseManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9DFD2EBC2CB322B000A9458C /* PurchaseManager.swift */; };
-		9DFD2EBF2CB322C300A9458C /* PurchaseView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9DFD2EBE2CB322C300A9458C /* PurchaseView.swift */; };
 		9DFD2EC32CB428DF00A9458C /* pufftracklogo.png in Resources */ = {isa = PBXBuildFile; fileRef = 9DFD2EC22CB428DF00A9458C /* pufftracklogo.png */; };
 /* End PBXBuildFile section */
 
@@ -65,15 +59,12 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
-		9D10B15D2CA3177500ABB4E7 /* Syncer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Syncer.swift; sourceTree = "<group>"; };
 		9D1989582CCBBFB1008E7204 /* StatisticsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StatisticsView.swift; sourceTree = "<group>"; };
 		9D19895A2CCBC310008E7204 /* WithdrawalTrackerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WithdrawalTrackerView.swift; sourceTree = "<group>"; };
-		9D2C14F92C95C3EA003DCD12 /* SocialsViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SocialsViewModel.swift; sourceTree = "<group>"; };
 		9D2D91712C7F726C00D45238 /* TODOS.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = TODOS.md; sourceTree = "<group>"; };
 		9D598CB92D1336240053EBC0 /* TrendAnalysis.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrendAnalysis.swift; sourceTree = "<group>"; };
 		9D6E90A02C95E13000DBC81C /* PuffTrackRealTests-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "PuffTrackRealTests-Bridging-Header.h"; sourceTree = "<group>"; };
 		9D6E90A12C95E13000DBC81C /* PuffTrackRealTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PuffTrackRealTests.swift; sourceTree = "<group>"; };
-		9D6E90A52C95E73700DBC81C /* FriendsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FriendsView.swift; sourceTree = "<group>"; };
 		9D90D6592CCCF57A002040E3 /* GraphView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GraphView.swift; sourceTree = "<group>"; };
 		9D990AC02C7F4EDF00C58EDD /* DataModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DataModels.swift; sourceTree = "<group>"; };
 		9D990AC22C7F4EED00C58EDD /* CalculationEngine.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CalculationEngine.swift; sourceTree = "<group>"; };
@@ -84,7 +75,6 @@
 		9DAD64F12CE69F7100C0785B /* WidgetKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = WidgetKit.framework; path = System/Library/Frameworks/WidgetKit.framework; sourceTree = SDKROOT; };
 		9DAD64F32CE69F7100C0785B /* SwiftUI.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SwiftUI.framework; path = System/Library/Frameworks/SwiftUI.framework; sourceTree = SDKROOT; };
 		9DAD650B2CE6A16C00C0785B /* PuffTrackWidgetExtension.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = PuffTrackWidgetExtension.entitlements; sourceTree = "<group>"; };
-		9DC18E952C95DEE80081F76A /* AuthView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthView.swift; sourceTree = "<group>"; };
 		9DF16E9F2C35861800A1E56C /* PuffTrack.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = PuffTrack.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		9DF16EA22C35861800A1E56C /* PuffTrackRealApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PuffTrackRealApp.swift; sourceTree = "<group>"; };
 		9DF16EA42C35861800A1E56C /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
@@ -95,8 +85,6 @@
 		9DF16EBD2C35861900A1E56C /* PuffTrackRealUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PuffTrackRealUITests.swift; sourceTree = "<group>"; };
 		9DF16EBF2C35861900A1E56C /* PuffTrackRealUITestsLaunchTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PuffTrackRealUITestsLaunchTests.swift; sourceTree = "<group>"; };
 		9DF40D9C2C7E6CA700CCBF46 /* MilestonesView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MilestonesView.swift; sourceTree = "<group>"; };
-		9DFD2EBC2CB322B000A9458C /* PurchaseManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PurchaseManager.swift; sourceTree = "<group>"; };
-		9DFD2EBE2CB322C300A9458C /* PurchaseView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PurchaseView.swift; sourceTree = "<group>"; };
 		9DFD2EC22CB428DF00A9458C /* pufftracklogo.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = pufftracklogo.png; sourceTree = "<group>"; };
 		A3CDB7A64601B9AADB206D2E /* Pods_PuffTrackReal.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_PuffTrackReal.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		A5B3213E8C61C7DAEE79609B /* Pods-PuffTrackReal.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-PuffTrackReal.release.xcconfig"; path = "Target Support Files/Pods-PuffTrackReal/Pods-PuffTrackReal.release.xcconfig"; sourceTree = "<group>"; };
@@ -174,16 +162,10 @@
 				9D990AC02C7F4EDF00C58EDD /* DataModels.swift */,
 				9D990AC22C7F4EED00C58EDD /* CalculationEngine.swift */,
 				9D990AC42C7F4F0700C58EDD /* ViewModel.swift */,
-				9D2C14F92C95C3EA003DCD12 /* SocialsViewModel.swift */,
 				9D2D91712C7F726C00D45238 /* TODOS.md */,
-				9DC18E952C95DEE80081F76A /* AuthView.swift */,
 				9DFD2EC22CB428DF00A9458C /* pufftracklogo.png */,
-				9D6E90A52C95E73700DBC81C /* FriendsView.swift */,
-				9D10B15D2CA3177500ABB4E7 /* Syncer.swift */,
 				9DA5AC4F2CA47E4800D374D8 /* OnboardingView.swift */,
 				9DA5AC522CA5F3B200D374D8 /* SettingsView.swift */,
-				9DFD2EBC2CB322B000A9458C /* PurchaseManager.swift */,
-				9DFD2EBE2CB322C300A9458C /* PurchaseView.swift */,
 				9D1989582CCBBFB1008E7204 /* StatisticsView.swift */,
 				9D19895A2CCBC310008E7204 /* WithdrawalTrackerView.swift */,
 				9D90D6592CCCF57A002040E3 /* GraphView.swift */,
@@ -407,17 +389,11 @@
 				9DF40D9D2C7E6CA700CCBF46 /* MilestonesView.swift in Sources */,
 				9D598CBA2D1336240053EBC0 /* TrendAnalysis.swift in Sources */,
 				9D1989592CCBBFB1008E7204 /* StatisticsView.swift in Sources */,
-				9D2C14FA2C95C3EA003DCD12 /* SocialsViewModel.swift in Sources */,
-				9DFD2EBD2CB322B000A9458C /* PurchaseManager.swift in Sources */,
 				9D19895B2CCBC310008E7204 /* WithdrawalTrackerView.swift in Sources */,
 				9DF16EA52C35861800A1E56C /* ContentView.swift in Sources */,
-				9D10B15E2CA3177500ABB4E7 /* Syncer.swift in Sources */,
-				9D6E90A62C95E73700DBC81C /* FriendsView.swift in Sources */,
 				9D990AC12C7F4EDF00C58EDD /* DataModels.swift in Sources */,
-				9DFD2EBF2CB322C300A9458C /* PurchaseView.swift in Sources */,
 				9DF16EA32C35861800A1E56C /* PuffTrackRealApp.swift in Sources */,
 				9D990AC32C7F4EED00C58EDD /* CalculationEngine.swift in Sources */,
-				9DC18E962C95DEE80081F76A /* AuthView.swift in Sources */,
 				9D90D65A2CCCF57A002040E3 /* GraphView.swift in Sources */,
 				9DA5AC532CA5F3B200D374D8 /* SettingsView.swift in Sources */,
 				9D990AC52C7F4F0700C58EDD /* ViewModel.swift in Sources */,
