@@ -11,6 +11,6 @@ PuffTrack is still available on the App Store, but no new updates or features ar
 
 ## Why Open Source?
 Development on PuffTrack has been discontinued, but the source code is available for anyone who wants to fork, modify, or build upon it.
-
+I can remove it from the store if someone really wants to pick it up and do stuff. but that sounds unlikely
 # LICENSE
 MIT
