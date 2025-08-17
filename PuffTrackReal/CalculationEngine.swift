@@ -18,15 +18,19 @@ class CalculationEngine {
         return daysSinceLastPuff
     }
     
-    static func calculateWithdrawalStatus(puffs: [Puff]) -> (status: String, description: String) {
+    static func calculateWithdrawalStatus(puffs: [Puff], trackingMode: TrackingMode) -> (status: String, description: String) {
         guard let lastPuffTime = puffs.map({ $0.timestamp }).max() else {
-            return ("No data", "Start tracking your puffs to see your withdrawal status.")
+            let unitName = trackingMode.unitNamePlural
+            return ("No data", "Start tracking your \(unitName) to see your withdrawal status.")
         }
         
         let hoursSinceLastPuff = Int(-lastPuffTime.timeIntervalSinceNow / 3600)
         
+        let unitName = trackingMode.unitName
+        let activityName = trackingMode == .vaping ? "puffing" : "smoking"
+        
         if hoursSinceLastPuff < 4 {
-            return ("You are still puffing", "Try to extend the time between puffs.")
+            return ("You are still \(activityName)", "Try to extend the time between \(trackingMode.unitNamePlural).")
         }
         
         switch hoursSinceLastPuff {
@@ -41,17 +45,17 @@ class CalculationEngine {
         }
     }
 
-    static func calculateFinancials(puffs: [Puff], settings: UserSettings) -> (moneySaved: Double, vapeDuration: Double) {
-        let avgPuffsPerDay = calculateAveragePuffsPerDay(puffs: puffs)
+    static func calculateFinancials(puffs: [Puff], settings: UserSettings) -> (moneySaved: Double, unitDuration: Double) {
+        let avgUnitsPerDay = calculateAverageUnitsPerDay(puffs: puffs, settings: settings)
         let dailySpend = settings.monthlySpending / 30
-        let newDailySpend = (Double(avgPuffsPerDay) / Double(settings.puffsPerVape)) * settings.vapeCost
+        let newDailySpend = (avgUnitsPerDay / Double(settings.puffsPerVape)) * settings.vapeCost
         let moneySaved = max(0, dailySpend - newDailySpend) * 30
-        let vapeDuration = Double(settings.puffsPerVape) / max(1, avgPuffsPerDay)
+        let unitDuration = Double(settings.puffsPerVape) / max(1, avgUnitsPerDay)
         
-        return (moneySaved, vapeDuration)
+        return (moneySaved, unitDuration)
     }
     
-    private static func calculateAveragePuffsPerDay(puffs: [Puff]) -> Double {
+    private static func calculateAverageUnitsPerDay(puffs: [Puff], settings: UserSettings) -> Double {
         let calendar = Calendar.current
         let now = Date()
         let thirtyDaysAgo = calendar.date(byAdding: .day, value: -30, to: now)!
@@ -59,7 +63,16 @@ class CalculationEngine {
         let recentPuffs = puffs.filter { $0.timestamp >= thirtyDaysAgo }
         let uniqueDays = Set(recentPuffs.map { calendar.startOfDay(for: $0.timestamp) }).count
         
-        return Double(recentPuffs.count) / Double(max(1, uniqueDays))
+        let avgPuffsPerDay = Double(recentPuffs.count) / Double(max(1, uniqueDays))
+        
+        // For cigarettes, we track individual cigarettes, so avgPuffsPerDay is already the average cigarettes per day
+        // For vaping, avgPuffsPerDay is puffs, so we need to convert to vape devices
+        switch settings.trackingMode {
+        case .cigarettes:
+            return avgPuffsPerDay  // Each "puff" is actually a cigarette
+        case .vaping:
+            return avgPuffsPerDay  // Keep as puffs for vaping calculations
+        }
     }
     
     static func getPuffCountForDate(_ date: Date, puffs: [Puff]) -> Int {

@@ -20,6 +20,7 @@ struct OnboardingView: View {
     @State private var puffsPerVape = ""
     @State private var monthlySpending = ""
     @State private var dailyPuffLimit = ""
+    @State private var selectedTrackingMode: TrackingMode = .vaping
     @State private var showInputAlert = false
     
     // Add this state variable to control keyboard focus
@@ -32,7 +33,8 @@ struct OnboardingView: View {
         "Welcome",
         "Track Progress",
         "Social Support",
-        "Vaping Habits",
+        "Choose Mode",
+        "Habits",
         "Impact Analysis",
         "Set Daily Limit",
         "Stay Motivated",
@@ -51,11 +53,12 @@ struct OnboardingView: View {
                         welcomeView(size: geometry.size).tag(0)
                         trackProgressView(size: geometry.size).tag(1)
                         socialSupportView(size: geometry.size).tag(2)
-                        vapingHabitsView(size: geometry.size).tag(3)
-                        impactAnalysisView(size: geometry.size).tag(4)
-                        setDailyLimitView(size: geometry.size, dailyPuffLimit: $dailyPuffLimit, accentColor: Color.red).tag(5)
-                        stayMotivatedView(size: geometry.size).tag(6)
-                        getStartedView(size: geometry.size).tag(7)
+                        chooseModeView(size: geometry.size).tag(3)
+                        habitsView(size: geometry.size).tag(4)
+                        impactAnalysisView(size: geometry.size).tag(5)
+                        setDailyLimitView(size: geometry.size, dailyPuffLimit: $dailyPuffLimit, accentColor: Color.red).tag(6)
+                        stayMotivatedView(size: geometry.size).tag(7)
+                        getStartedView(size: geometry.size).tag(8)
                     }
                     .tabViewStyle(PageTabViewStyle(indexDisplayMode: .never))
                     .animation(.easeInOut, value: currentStep)
@@ -72,7 +75,7 @@ struct OnboardingView: View {
                                              currentStep
                                 
                                 // Validate before allowing progression
-                                if newStep > currentStep && currentStep == 3 && !areVapingFieldsFilled() {
+                                if newStep > currentStep && currentStep == 4 && !areHabitsFieldsFilled() {
                                     showInputAlert = true
                                 } else if newStep >= 0 && newStep < steps.count {
                                     withAnimation {
@@ -88,7 +91,7 @@ struct OnboardingView: View {
         }
         .alert(isPresented: $showInputAlert) {
             Alert(title: Text("Information Required"),
-                  message: Text("Please fill in all vaping habit fields to continue."),
+                  message: Text("Please fill in all habit fields to continue."),
                   dismissButton: .default(Text("OK")))
         }
     }
@@ -134,7 +137,7 @@ struct OnboardingView: View {
             }
             Spacer()
             Button(action: {
-                if currentStep == 3 && !areVapingFieldsFilled() {
+                if currentStep == 4 && !areHabitsFieldsFilled() {
                     showInputAlert = true
                 } else if currentStep == steps.count - 1 {
                     completeOnboarding()
@@ -206,7 +209,7 @@ struct OnboardingView: View {
             Text("Stronger together.")
                 .font(.title3)
                 .multilineTextAlignment(.center)
-            Text("Quitting is hard, but you don't have to do it alone. Connect with friends, share your progress, and encourage each other to stay vape-free.")
+            Text("Quitting is hard, but you don't have to do it alone. Connect with friends, share your progress, and encourage each other to stay free.")
                 .font(.body)
                 .multilineTextAlignment(.center)
                 .padding(.horizontal)
@@ -215,20 +218,76 @@ struct OnboardingView: View {
         .foregroundColor(textColor)
     }
     
-    func vapingHabitsView(size: CGSize) -> some View {
+    func chooseModeView(size: CGSize) -> some View {
+        VStack(spacing: 30) {
+            Image(systemName: "questionmark.circle.fill")
+                .font(.system(size: min(size.width, size.height) * 0.15))
+                .foregroundColor(accentColor)
+            
+            Text("What Are You Tracking?")
+                .font(.system(size: 28, weight: .bold))
+            
+            Text("Choose what you want to track and quit.")
+                .font(.title3)
+                .multilineTextAlignment(.center)
+            
+            VStack(spacing: 15) {
+                ForEach(TrackingMode.allCases, id: \.self) { mode in
+                    Button(action: {
+                        selectedTrackingMode = mode
+                    }) {
+                        HStack {
+                            VStack(alignment: .leading, spacing: 5) {
+                                Text(mode.displayName)
+                                    .font(.headline)
+                                    .foregroundColor(selectedTrackingMode == mode ? .white : textColor)
+                                
+                                Text(mode == .vaping ? "Track your vaping puffs" : "Track cigarettes smoked")
+                                    .font(.caption)
+                                    .foregroundColor(selectedTrackingMode == mode ? .white.opacity(0.8) : textColor.opacity(0.7))
+                            }
+                            
+                            Spacer()
+                            
+                            if selectedTrackingMode == mode {
+                                Image(systemName: "checkmark.circle.fill")
+                                    .foregroundColor(.white)
+                                    .font(.title2)
+                            }
+                        }
+                        .padding()
+                        .background(selectedTrackingMode == mode ? accentColor : Color.gray.opacity(0.1))
+                        .cornerRadius(15)
+                    }
+                }
+            }
+            .padding(.horizontal)
+        }
+        .padding()
+        .foregroundColor(textColor)
+    }
+    
+    func habitsView(size: CGSize) -> some View {
         VStack(spacing: 20) {
             Text("Understand Your Habits")
                 .font(.system(size: 28, weight: .bold))
-            Text("We need to know where you're at to help you quit. Provide your current vaping details to build a plan for your journey away from nicotine.")
+            Text("We need to know where you're at to help you quit. Provide your current \(selectedTrackingMode.displayName.lowercased()) details to build a plan for your journey away from nicotine.")
                 .font(.body)
                 .multilineTextAlignment(.center)
                 .padding(.horizontal)
             Group {
-                CustomTextField(placeholder: "Cost per vape ($)", text: $vapeCost, colorScheme: colorScheme, focusedField: $focusedField, field: .vapeCost)
-                    .keyboardType(.decimalPad)
-                CustomTextField(placeholder: "Puffs per vape", text: $puffsPerVape, colorScheme: colorScheme, focusedField: $focusedField, field: .puffsPerVape)
-                    .keyboardType(.numberPad)
-                CustomTextField(placeholder: "Monthly vape spending ($)", text: $monthlySpending, colorScheme: colorScheme, focusedField: $focusedField, field: .monthlySpending)
+                if selectedTrackingMode == .vaping {
+                    CustomTextField(placeholder: String.currencyPlaceholder(for: "Cost per vape"), text: $vapeCost, colorScheme: colorScheme, focusedField: $focusedField, field: .vapeCost)
+                        .keyboardType(.decimalPad)
+                    CustomTextField(placeholder: "Puffs per vape", text: $puffsPerVape, colorScheme: colorScheme, focusedField: $focusedField, field: .puffsPerVape)
+                        .keyboardType(.numberPad)
+                } else {
+                    CustomTextField(placeholder: String.currencyPlaceholder(for: "Cost per pack"), text: $vapeCost, colorScheme: colorScheme, focusedField: $focusedField, field: .vapeCost)
+                        .keyboardType(.decimalPad)
+                    CustomTextField(placeholder: "Cigarettes per pack", text: $puffsPerVape, colorScheme: colorScheme, focusedField: $focusedField, field: .puffsPerVape)
+                        .keyboardType(.numberPad)
+                }
+                CustomTextField(placeholder: String.currencyPlaceholder(for: "Monthly spending"), text: $monthlySpending, colorScheme: colorScheme, focusedField: $focusedField, field: .monthlySpending)
                     .keyboardType(.decimalPad)
             }
         }
@@ -242,14 +301,10 @@ struct OnboardingView: View {
                let puffs = Double(puffsPerVape),
                let monthly = Double(monthlySpending) {
                 
-                // Calculate yearly metrics
-                let yearlySpending = monthly * 12
-                let vapesPerYear = (monthly * 12) / cost
-                let timeWasted = (puffs * vapesPerYear * 3) / 3600 // 3 seconds per puff, converted to hours
-                let wasteGenerated = vapesPerYear * 0.15 // Assuming 0.15 kg per vape device
+                let impactData = calculateImpactData(cost: cost, puffs: puffs, monthly: monthly)
                 
                 VStack(spacing: 30) {
-                    Text("Analyzing Your Vaping Impact")
+                    Text("Analyzing Your \(selectedTrackingMode.displayName) Impact")
                         .font(.system(size: 24, weight: .bold))
                         .multilineTextAlignment(.center)
                         .lineLimit(2)
@@ -258,10 +313,11 @@ struct OnboardingView: View {
                         .frame(height: 50)
                     
                     RevealingMetricsView(
-                        yearlySpending: yearlySpending,
-                        vapesPerYear: vapesPerYear,
-                        timeWasted: timeWasted,
-                        wasteGenerated: wasteGenerated
+                        yearlySpending: impactData.yearlySpending,
+                        unitsPerYear: impactData.unitsPerYear,
+                        timeWasted: impactData.timeWasted,
+                        wasteGenerated: impactData.wasteGenerated,
+                        trackingMode: selectedTrackingMode
                     )
                 }
             } else {
@@ -270,6 +326,26 @@ struct OnboardingView: View {
             }
         }
         .padding()
+    }
+    
+    private func calculateImpactData(cost: Double, puffs: Double, monthly: Double) -> (yearlySpending: Double, unitsPerYear: Double, timeWasted: Double, wasteGenerated: Double) {
+        let yearlySpending = monthly * 12
+        let unitsPerYear = (monthly * 12) / cost
+        
+        let timeWasted: Double
+        let wasteGenerated: Double
+        
+        if selectedTrackingMode == .vaping {
+            timeWasted = (puffs * unitsPerYear * 3) / 3600 // 3 seconds per puff, converted to hours
+            wasteGenerated = unitsPerYear * 0.15 // Assuming 0.15 kg per vape device
+        } else {
+            // For cigarettes: puffs is cigarettes per pack, unitsPerYear is packs per year
+            // Each cigarette takes about 6 minutes to smoke
+            timeWasted = (puffs * unitsPerYear * 6) / 60 // 6 minutes per cigarette, converted to hours
+            wasteGenerated = unitsPerYear * 0.02 // Assuming 0.02 kg per cigarette pack
+        }
+        
+        return (yearlySpending, unitsPerYear, timeWasted, wasteGenerated)
     }
     
     func setDailyLimitView(size: CGSize, dailyPuffLimit: Binding<String>, accentColor: Color) -> some View {
@@ -288,7 +364,8 @@ struct OnboardingView: View {
                     .fill(Color.secondary.opacity(0.1))
                 
                 VStack {
-                    Slider(value: limitValue, in: 0...100, step: 1)
+                    let maxLimit = selectedTrackingMode == .cigarettes ? 20 : 100
+                    Slider(value: limitValue, in: 0...Double(maxLimit), step: 1)
                         .accentColor(accentColor)
                         .padding(.horizontal)
                     
@@ -299,20 +376,20 @@ struct OnboardingView: View {
                             .font(.system(size: 36, weight: .bold))
                             .foregroundColor(accentColor)
                         Spacer()
-                        Text("100")
+                        Text("\(maxLimit)")
                     }
                     .padding(.horizontal)
                 }
             }
             .frame(height: size.height * 0.15)
             
-            Text("Set a daily puff limit to start cutting back. Every reduction counts.")
+            Text("Set a daily \(selectedTrackingMode.unitName) limit to start cutting back. Every reduction counts.")
                 .font(.caption)
                 .foregroundColor(.secondary)
             
             HStack {
                 Image(systemName: "info.circle")
-                Text("Challenge yourself to reduce your daily puff count")
+                Text("Challenge yourself to reduce your daily \(selectedTrackingMode.unitName) count")
             }
             .font(.footnote)
             .foregroundColor(.secondary)
@@ -333,7 +410,7 @@ struct OnboardingView: View {
             Text("Receive personalized notifications to keep you on track.")
                 .font(.title3)
                 .multilineTextAlignment(.center)
-            Text("Receive daily nudges to help you stay on track and quit vaping for good. Remember: every time you skip a puff, you're winning.")
+            Text("Receive daily nudges to help you stay on track and quit \(selectedTrackingMode.displayName.lowercased()) for good. Remember: every time you skip a \(selectedTrackingMode.unitName), you're winning.")
                 .font(.body)
                 .multilineTextAlignment(.center)
                 .padding(.horizontal)
@@ -354,10 +431,10 @@ struct OnboardingView: View {
             Text("A Healthier You Starts Now")
                 .font(.system(size: 32, weight: .bold))
                 .multilineTextAlignment(.center)
-            Text("You're taking the first step towards a life free from nicotine. Let's quit, one puff at a time.")
+            Text("You're taking the first step towards a life free from nicotine. Let's quit, one \(selectedTrackingMode.unitName) at a time.")
                 .font(.title3)
                 .multilineTextAlignment(.center)
-            Text("Every avoided puff brings you closer to a healthier, happier life. PuffTrack is here to help you get there.")
+            Text("Every avoided \(selectedTrackingMode.unitName) brings you closer to a healthier, happier life. PuffTrack is here to help you get there.")
                 .font(.body)
                 .multilineTextAlignment(.center)
                 .padding(.horizontal)
@@ -366,7 +443,7 @@ struct OnboardingView: View {
         .foregroundColor(textColor)
     }
     
-    private func areVapingFieldsFilled() -> Bool {
+    private func areHabitsFieldsFilled() -> Bool {
         return !vapeCost.isEmpty &&
                !puffsPerVape.isEmpty &&
                !monthlySpending.isEmpty &&
@@ -381,7 +458,7 @@ struct OnboardingView: View {
            let puffs = Int(puffsPerVape),
            let spending = Double(monthlySpending)
             {
-            viewModel.updateSettings(vapeCost: cost, puffsPerVape: puffs, monthlySpending: spending, dailyPuffLimit: limit)
+            viewModel.updateSettings(vapeCost: cost, puffsPerVape: puffs, monthlySpending: spending, dailyPuffLimit: limit, trackingMode: selectedTrackingMode)
             
             isOnboardingComplete = true
             UserDefaults.standard.set(true, forKey: "onboardingComplete")
@@ -418,9 +495,10 @@ struct LoadingView: View {
 
 struct RevealingMetricsView: View {
     let yearlySpending: Double
-    let vapesPerYear: Double
+    let unitsPerYear: Double
     let timeWasted: Double
     let wasteGenerated: Double
+    let trackingMode: TrackingMode
     
     @State private var showMetrics = false
     
@@ -431,17 +509,17 @@ struct RevealingMetricsView: View {
                 MetricCard(
                     icon: "dollarsign.circle.fill",
                     title: "Yearly Spending",
-                    value: String(format: "$%.2f", yearlySpending),
+                    value: yearlySpending.currencyFormatted,
                     subtitle: "That's a down payment on a car",
                     color: .red
                 )
                 .transition(.scale.combined(with: .opacity))
                 
-                // Vapes Count
+                // Units Count
                 MetricCard(
                     icon: "exclamationmark.triangle.fill",
-                    title: "Vapes Used Yearly",
-                    value: String(format: "%.0f devices", vapesPerYear),
+                    title: trackingMode == .vaping ? "Vapes Used Yearly" : "Packs Smoked Yearly",
+                    value: String(format: "%.0f %@", unitsPerYear, trackingMode == .vaping ? "devices" : "packs"),
                     subtitle: "Each one impacts your health",
                     color: .orange
                 )
@@ -450,7 +528,7 @@ struct RevealingMetricsView: View {
                 // Time Impact
                 MetricCard(
                     icon: "clock.fill",
-                    title: "Hours Lost to Vaping",
+                    title: "Hours Lost to \(trackingMode.displayName)",
                     value: String(format: "%.1f hours", timeWasted),
                     subtitle: "Time you'll never get back",
                     color: .purple

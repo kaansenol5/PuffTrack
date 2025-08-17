@@ -7,7 +7,6 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		1FAFF658064294BE44D4AED9 /* Pods_PuffTrackReal.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A3CDB7A64601B9AADB206D2E /* Pods_PuffTrackReal.framework */; };
 		9D1989592CCBBFB1008E7204 /* StatisticsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9D1989582CCBBFB1008E7204 /* StatisticsView.swift */; };
 		9D19895B2CCBC310008E7204 /* WithdrawalTrackerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9D19895A2CCBC310008E7204 /* WithdrawalTrackerView.swift */; };
 		9D598CBA2D1336240053EBC0 /* TrendAnalysis.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9D598CB92D1336240053EBC0 /* TrendAnalysis.swift */; };
@@ -74,7 +73,6 @@
 		9DA5AC522CA5F3B200D374D8 /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
 		9DAD64F12CE69F7100C0785B /* WidgetKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = WidgetKit.framework; path = System/Library/Frameworks/WidgetKit.framework; sourceTree = SDKROOT; };
 		9DAD64F32CE69F7100C0785B /* SwiftUI.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SwiftUI.framework; path = System/Library/Frameworks/SwiftUI.framework; sourceTree = SDKROOT; };
-		9DAD650B2CE6A16C00C0785B /* PuffTrackWidgetExtension.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = PuffTrackWidgetExtension.entitlements; sourceTree = "<group>"; };
 		9DF16E9F2C35861800A1E56C /* PuffTrack.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = PuffTrack.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		9DF16EA22C35861800A1E56C /* PuffTrackRealApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PuffTrackRealApp.swift; sourceTree = "<group>"; };
 		9DF16EA42C35861800A1E56C /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
@@ -86,9 +84,6 @@
 		9DF16EBF2C35861900A1E56C /* PuffTrackRealUITestsLaunchTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PuffTrackRealUITestsLaunchTests.swift; sourceTree = "<group>"; };
 		9DF40D9C2C7E6CA700CCBF46 /* MilestonesView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MilestonesView.swift; sourceTree = "<group>"; };
 		9DFD2EC22CB428DF00A9458C /* pufftracklogo.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = pufftracklogo.png; sourceTree = "<group>"; };
-		A3CDB7A64601B9AADB206D2E /* Pods_PuffTrackReal.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_PuffTrackReal.framework; sourceTree = BUILT_PRODUCTS_DIR; };
-		A5B3213E8C61C7DAEE79609B /* Pods-PuffTrackReal.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-PuffTrackReal.release.xcconfig"; path = "Target Support Files/Pods-PuffTrackReal/Pods-PuffTrackReal.release.xcconfig"; sourceTree = "<group>"; };
-		A6F1327F21A5F48A54DCCE8D /* Pods-PuffTrackReal.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-PuffTrackReal.debug.xcconfig"; path = "Target Support Files/Pods-PuffTrackReal/Pods-PuffTrackReal.debug.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -96,7 +91,6 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				1FAFF658064294BE44D4AED9 /* Pods_PuffTrackReal.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -117,24 +111,13 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
-		119B0437B7EF6F9D418C2B40 /* Pods */ = {
-			isa = PBXGroup;
-			children = (
-				A6F1327F21A5F48A54DCCE8D /* Pods-PuffTrackReal.debug.xcconfig */,
-				A5B3213E8C61C7DAEE79609B /* Pods-PuffTrackReal.release.xcconfig */,
-			);
-			path = Pods;
-			sourceTree = "<group>";
-		};
 		9DF16E962C35861800A1E56C = {
 			isa = PBXGroup;
 			children = (
-				9DAD650B2CE6A16C00C0785B /* PuffTrackWidgetExtension.entitlements */,
 				9DF16EA12C35861800A1E56C /* PuffTrackReal */,
 				9DF16EB22C35861900A1E56C /* PuffTrackRealTests */,
 				9DF16EBC2C35861900A1E56C /* PuffTrackRealUITests */,
 				9DF16EA02C35861800A1E56C /* Products */,
-				119B0437B7EF6F9D418C2B40 /* Pods */,
 				A775FF220D340BD806FE362C /* Frameworks */,
 			);
 			sourceTree = "<group>";
@@ -202,7 +185,6 @@
 		A775FF220D340BD806FE362C /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
-				A3CDB7A64601B9AADB206D2E /* Pods_PuffTrackReal.framework */,
 				9DAD64F12CE69F7100C0785B /* WidgetKit.framework */,
 				9DAD64F32CE69F7100C0785B /* SwiftUI.framework */,
 			);
@@ -216,11 +198,9 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 9DF16EC32C35861900A1E56C /* Build configuration list for PBXNativeTarget "PuffTrack" */;
 			buildPhases = (
-				09062A7460CD482AD3F202FF /* [CP] Check Pods Manifest.lock */,
 				9DF16E9B2C35861800A1E56C /* Sources */,
 				9DF16E9C2C35861800A1E56C /* Frameworks */,
 				9DF16E9D2C35861800A1E56C /* Resources */,
-				CA82EEE13D7B94B8649E9B73 /* [CP] Embed Pods Frameworks */,
 				9DAD65062CE69F7200C0785B /* Embed Foundation Extensions */,
 			);
 			buildRules = (
@@ -338,48 +318,6 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXResourcesBuildPhase section */
-
-/* Begin PBXShellScriptBuildPhase section */
-		09062A7460CD482AD3F202FF /* [CP] Check Pods Manifest.lock */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputFileListPaths = (
-			);
-			inputPaths = (
-				"${PODS_PODFILE_DIR_PATH}/Podfile.lock",
-				"${PODS_ROOT}/Manifest.lock",
-			);
-			name = "[CP] Check Pods Manifest.lock";
-			outputFileListPaths = (
-			);
-			outputPaths = (
-				"$(DERIVED_FILE_DIR)/Pods-PuffTrackReal-checkManifestLockResult.txt",
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
-			showEnvVarsInLog = 0;
-		};
-		CA82EEE13D7B94B8649E9B73 /* [CP] Embed Pods Frameworks */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputFileListPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-PuffTrackReal/Pods-PuffTrackReal-frameworks-${CONFIGURATION}-input-files.xcfilelist",
-			);
-			name = "[CP] Embed Pods Frameworks";
-			outputFileListPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-PuffTrackReal/Pods-PuffTrackReal-frameworks-${CONFIGURATION}-output-files.xcfilelist",
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-PuffTrackReal/Pods-PuffTrackReal-frameworks.sh\"\n";
-			showEnvVarsInLog = 0;
-		};
-/* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
 		9DF16E9B2C35861800A1E56C /* Sources */ = {
@@ -556,7 +494,6 @@
 		};
 		9DF16EC42C35861900A1E56C /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = A6F1327F21A5F48A54DCCE8D /* Pods-PuffTrackReal.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
@@ -572,14 +509,14 @@
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
-				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
-				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				INFOPLIST_KEY_UISupportedInterfaceOrientations = UIInterfaceOrientationPortrait;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown";
 				IPHONEOS_DEPLOYMENT_TARGET = 16.6;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.3;
+				MARKETING_VERSION = 1.4;
 				PRODUCT_BUNDLE_IDENTIFIER = com.kaansenol.PuffTrack;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
@@ -592,7 +529,6 @@
 		};
 		9DF16EC52C35861900A1E56C /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = A5B3213E8C61C7DAEE79609B /* Pods-PuffTrackReal.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
@@ -608,14 +544,14 @@
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
-				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
-				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				INFOPLIST_KEY_UISupportedInterfaceOrientations = UIInterfaceOrientationPortrait;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown";
 				IPHONEOS_DEPLOYMENT_TARGET = 16.6;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.3;
+				MARKETING_VERSION = 1.4;
 				PRODUCT_BUNDLE_IDENTIFIER = com.kaansenol.PuffTrack;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";

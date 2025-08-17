@@ -16,7 +16,7 @@ class PuffTrackViewModel: ObservableObject {
     @Published var withdrawalDescription: String = ""
     @Published var streak: Int = 0
     @Published var moneySaved: Double = 0
-    @Published var vapeDuration: Double = 0
+    @Published var unitDuration: Double = 0
     @Published var milestones: [Milestone] = []
     @Published var notificationsEnabled: Bool = false {
         didSet {
@@ -158,8 +158,8 @@ class PuffTrackViewModel: ObservableObject {
         
     }
     
-    func updateSettings(vapeCost: Double, puffsPerVape: Int, monthlySpending: Double, dailyPuffLimit: Int) {
-        model.settings = UserSettings(vapeCost: vapeCost, puffsPerVape: puffsPerVape, monthlySpending: monthlySpending, dailyPuffLimit: dailyPuffLimit)
+    func updateSettings(vapeCost: Double, puffsPerVape: Int, monthlySpending: Double, dailyPuffLimit: Int, trackingMode: TrackingMode) {
+        model.settings = UserSettings(vapeCost: vapeCost, puffsPerVape: puffsPerVape, monthlySpending: monthlySpending, dailyPuffLimit: dailyPuffLimit, trackingMode: trackingMode)
     }
     
     private func setupBindings() {
@@ -178,13 +178,13 @@ class PuffTrackViewModel: ObservableObject {
     private func updateCalculations() {
         streak = CalculationEngine.calculateStreak(puffs: model.puffs)
         
-        let withdrawalInfo = CalculationEngine.calculateWithdrawalStatus(puffs: model.puffs)
+        let withdrawalInfo = CalculationEngine.calculateWithdrawalStatus(puffs: model.puffs, trackingMode: model.settings.trackingMode)
         withdrawalStatus = withdrawalInfo.status
         withdrawalDescription = withdrawalInfo.description
         
         let financials = CalculationEngine.calculateFinancials(puffs: model.puffs, settings: model.settings)
         moneySaved = financials.moneySaved
-        vapeDuration = financials.vapeDuration
+        unitDuration = financials.unitDuration
         
         if notificationsEnabled {
             scheduleNotifications()

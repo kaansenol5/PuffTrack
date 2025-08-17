@@ -14,6 +14,7 @@ struct SettingsView: View {
     @State private var puffsPerVape: String = ""
     @State private var monthlySpending: String = ""
     @State private var dailyPuffLimit: String = ""
+    @State private var selectedTrackingMode: TrackingMode = .vaping
     @State private var activeAlert: ActiveAlert?
     @State private var showViewDataSheet = false
     @State private var userData: String = ""
@@ -33,6 +34,7 @@ struct SettingsView: View {
     var body: some View {
         NavigationView {
             Form {
+                trackingModeSection
                 vapeDetailsSection
                 dailyPuffLimitSection
                 monthlySpendingSection
@@ -51,18 +53,20 @@ struct SettingsView: View {
         .alert(item: $activeAlert) { alertType in
             switch alertType {
             case .resetData:
+                let unitName = viewModel.settings.unitDisplayNamePlural
                 return Alert(
                     title: Text("Reset All Data"),
-                    message: Text("Are you sure you want to reset all your puff data? This action cannot be undone."),
+                    message: Text("Are you sure you want to reset all your \(unitName) data? This action cannot be undone."),
                     primaryButton: .destructive(Text("Reset")) {
                         activeAlert = .resetDataConfirmation
                     },
                     secondaryButton: .cancel()
                 )
             case .resetDataConfirmation:
+                let unitName = viewModel.settings.unitDisplayNamePlural
                 return Alert(
                     title: Text("Confirm Reset"),
-                    message: Text("This will permanently delete all your logged puffs. Are you absolutely sure?"),
+                    message: Text("This will permanently delete all your logged \(unitName). Are you absolutely sure?"),
                     primaryButton: .destructive(Text("Yes, Reset All Data")) {
                         resetAllData()
                     },
@@ -125,13 +129,59 @@ struct SettingsView: View {
         activeAlert = .resetDataSuccess
     }
     
+    private var trackingModeSection: some View {
+        Section(header: Text("Tracking Mode").foregroundColor(.red)) {
+            VStack(spacing: 15) {
+                ForEach(TrackingMode.allCases, id: \.self) { mode in
+                    Button(action: {
+                        selectedTrackingMode = mode
+                    }) {
+                        HStack {
+                            Image(systemName: mode == .vaping ? "cloud.fill" : "smoke.fill")
+                                .foregroundColor(.red)
+                            
+                            VStack(alignment: .leading, spacing: 3) {
+                                Text(mode.displayName)
+                                    .font(.headline)
+                                    .foregroundColor(.primary)
+                                
+                                Text(mode == .vaping ? "Track vaping puffs" : "Track cigarettes smoked")
+                                    .font(.caption)
+                                    .foregroundColor(.secondary)
+                            }
+                            
+                            Spacer()
+                            
+                            if selectedTrackingMode == mode {
+                                Image(systemName: "checkmark.circle.fill")
+                                    .foregroundColor(.red)
+                                    .font(.title2)
+                            } else {
+                                Image(systemName: "circle")
+                                    .foregroundColor(.gray)
+                                    .font(.title2)
+                            }
+                        }
+                        .padding(.vertical, 5)
+                    }
+                    .buttonStyle(PlainButtonStyle())
+                }
+            }
+        }
+    }
+    
     private var vapeDetailsSection: some View {
-        Section(header: Text("Vape Details").foregroundColor(.red)) {
+        let trackingMode = selectedTrackingMode
+        let sectionTitle = trackingMode == .vaping ? "Vape Details" : "Cigarette Details"
+        let costTitle = trackingMode == .vaping ? String.currencyPlaceholder(for: "Cost per vape") : String.currencyPlaceholder(for: "Cost per pack")
+        let unitTitle = trackingMode == .vaping ? "Puffs per vape" : "Cigarettes per pack"
+        
+        return Section(header: Text(sectionTitle).foregroundColor(.red)) {
             HStack {
                 Image(systemName: "dollarsign.circle.fill")
                     .foregroundColor(.red)
                 VStack(alignment: .leading) {
-                    Text("Cost per vape ($)")
+                    Text(costTitle)
                         .font(.caption)
                         .foregroundColor(.secondary)
                     TextField("0.00", text: $vapeCost)
@@ -142,7 +192,7 @@ struct SettingsView: View {
                 Image(systemName: "number.circle.fill")
                     .foregroundColor(.red)
                 VStack(alignment: .leading) {
-                    Text("Puffs per vape")
+                    Text(unitTitle)
                         .font(.caption)
                         .foregroundColor(.secondary)
                     TextField("0", text: $puffsPerVape)
@@ -153,12 +203,16 @@ struct SettingsView: View {
     }
 
     private var dailyPuffLimitSection: some View {
-        Section(header: Text("Daily Puff Limit").foregroundColor(.red)) {
+        let trackingMode = selectedTrackingMode
+        let sectionTitle = "Daily \(trackingMode.displayName) Limit"
+        let limitTitle = "Daily \(trackingMode.unitName.capitalized) Limit"
+        
+        return Section(header: Text(sectionTitle).foregroundColor(.red)) {
             HStack {
                 Image(systemName: "lungs.fill")
                     .foregroundColor(.red)
                 VStack(alignment: .leading) {
-                    Text("Daily Puff Limit")
+                    Text(limitTitle)
                         .font(.caption)
                         .foregroundColor(.secondary)
                     TextField("0", text: $dailyPuffLimit)
@@ -169,11 +223,14 @@ struct SettingsView: View {
     }
 
     private var monthlySpendingSection: some View {
-        Section(header: Text("Monthly Spending").foregroundColor(.red)) {
+        let trackingMode = selectedTrackingMode
+        let placeholder = trackingMode == .vaping ? String.currencyPlaceholder(for: "Monthly vape spending") : String.currencyPlaceholder(for: "Monthly cigarette spending")
+        
+        return Section(header: Text("Monthly Spending").foregroundColor(.red)) {
             HStack {
                 Image(systemName: "creditcard.fill")
                     .foregroundColor(.red)
-                TextField("Monthly vape spending ($)", text: $monthlySpending)
+                TextField(placeholder, text: $monthlySpending)
                     .keyboardType(.decimalPad)
             }
         }
@@ -200,6 +257,7 @@ struct SettingsView: View {
         puffsPerVape = "\(viewModel.settings.puffsPerVape)"
         monthlySpending = String(format: "%.2f", viewModel.settings.monthlySpending)
         dailyPuffLimit = "\(viewModel.settings.dailyPuffLimit)"
+        selectedTrackingMode = viewModel.settings.trackingMode
     }
     
     private func saveSettings() {
@@ -207,7 +265,7 @@ struct SettingsView: View {
            let puffs = Int(puffsPerVape),
            let spending = Double(monthlySpending),
            let puffLimit = Int(dailyPuffLimit) {
-            viewModel.updateSettings(vapeCost: cost, puffsPerVape: puffs, monthlySpending: spending, dailyPuffLimit: puffLimit)
+            viewModel.updateSettings(vapeCost: cost, puffsPerVape: puffs, monthlySpending: spending, dailyPuffLimit: puffLimit, trackingMode: selectedTrackingMode)
         }
         presentationMode.wrappedValue.dismiss()
     }

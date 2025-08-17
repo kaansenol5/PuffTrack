@@ -113,7 +113,7 @@ struct ContentView: View {
                         ))
                         .foregroundColor(textColor)
                     
-                    Text("PUFFS")
+                    Text(viewModel.settings.unitDisplayNamePlural.uppercased())
                         .font(.caption)
                         .foregroundColor(.gray)
                     
@@ -128,7 +128,7 @@ struct ContentView: View {
             HStack(spacing: 15) {
                 PuffButton(action: {
                     viewModel.addPuff()
-                })
+                }, unitName: viewModel.settings.unitDisplayName)
                 .frame(width: min(size.width * 0.45, 200))
                 
                 Button(action: { isGraphViewPresented.toggle() }) {
@@ -147,12 +147,13 @@ struct ContentView: View {
 
     private var hoursSinceLastPuffText: String {
         let hours = viewModel.hoursSinceLastPuff
+        let unitName = viewModel.settings.unitDisplayName
         if hours < 1 {
-            return "Less than an hour since last puff"
+            return "Less than an hour since last \(unitName)"
         } else if hours == 1 {
-            return "1 hour since last puff"
+            return "1 hour since last \(unitName)"
         } else {
-            return "\(hours) hours since last puff"
+            return "\(hours) hours since last \(unitName)"
         }
     }
 
@@ -214,7 +215,7 @@ struct ContentView: View {
                 HStack(spacing: 15) {
                     StatCard(value: "\(viewModel.streak) days", icon: "flame.fill", color: .orange, action: { isMilestonesPresented.toggle() })
                         .frame(width: geometry.size.width / 2 - 7.5)
-                    StatCard(value: "$\(String(format: "%.0f", viewModel.moneySaved))", icon: "dollarsign.circle.fill", color: .green, action: {isStatisticsViewPresented.toggle()})
+                    StatCard(value: viewModel.moneySaved.currencyFormatted, icon: "dollarsign.circle.fill", color: .green, action: {isStatisticsViewPresented.toggle()})
                         .frame(width: geometry.size.width / 2 - 7.5)
                 }
             }
@@ -237,6 +238,7 @@ struct ContentView: View {
 
 struct PuffButton: View {
     let action: () -> Void
+    let unitName: String
     @State private var isPressed = false
     
     var body: some View {
@@ -254,7 +256,7 @@ struct PuffButton: View {
             HStack {
                 Image(systemName: "plus")
                     .font(.system(size: 20, weight: .bold))
-                Text("ADD PUFF")
+                Text("ADD \(unitName.uppercased())")
                     .font(.system(size: 16, weight: .bold))
             }
             .foregroundColor(.white)
